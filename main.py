@@ -2,12 +2,17 @@ from data_utils.data_builder import DataBuilder
 from data_utils.combine_3d_dataframe import combine_3d_dataframes
 
 from alignment.mocap_data_alignment import align_freemocap_and_qualisys_data
-from visualizations.scatter_3d import plot_3d_scatter
+from alignment.transformations.apply_transformation import apply_transformation
+
+from debug_plots.scatter_3d import plot_3d_scatter
+
 from markers.mediapipe_markers import mediapipe_markers
 from markers.markers_to_extract import markers_to_extract
 from markers.qualisys_markers import qualisys_markers
-from alignment.transformations.apply_transformation import apply_transformation
 
+from error_calculations.get_error_metrics import get_error_metrics
+
+from dash_app.run_dash_app import run_dash_app
 
 
 def main(freemocap_data_path,qualisys_data_path,representative_frame, create_scatter_plot = False):
@@ -44,7 +49,9 @@ def main(freemocap_data_path,qualisys_data_path,representative_frame, create_sca
     qualisys_dataframe['system'] = 'qualisys'
 
     combined_dataframe = combine_3d_dataframes(dataframe_A=freemocap_dataframe, dataframe_B=qualisys_dataframe)
+    error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_dataframe)
 
+    run_dash_app(dataframe_of_3d_data=combined_dataframe, rmse_dataframe=error_metrics_dict['rmse_dataframe'], absolute_error_dataframe=error_metrics_dict['absolute_error_dataframe'])
 
     f = 2 
 
