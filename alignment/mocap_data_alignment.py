@@ -1,30 +1,41 @@
 import numpy as np
 
-from .markers.marker_extraction import extract_specific_markers
-
-from .markers.markers_to_extract import markers_to_extract
-from .markers.qualisys_markers import qualisys_markers
-from .markers.mediapipe_markers import mediapipe_markers
 
 from .transformations.least_squares_optimization import run_least_squares_optimization
 from .transformations.apply_transformation import apply_transformation
 
 
-def align_freemocap_and_qualisys_data(freemocap_data:np.ndarray, qualisys_data:np.ndarray, representative_frame):
+def align_freemocap_and_qualisys_data(freemocap_data: np.ndarray, qualisys_data: np.ndarray, representative_frame):
+    """
+    Align FreeMoCap and Qualisys data using a representative frame and least squares optimization. FreeMoCap and Qualisys data should come in with the same number of markers, in the same order.
+
+    Parameters:
+    - freemocap_data (numpy.ndarray): 3D array of FreeMoCap data of shape (num_frames, num_markers, 3).
+    - qualisys_data (numpy.ndarray): 3D array of Qualisys data of shape (num_frames, num_markers, 3).
+    - representative_frame (int): Index of the frame to be used for alignment.
+
+    Returns:
+    - freemocap_data_transformed (numpy.ndarray): Aligned FreeMoCap data.
+    """
+
+    if freemocap_data.shape[1] != qualisys_data.shape[1]:
+        raise ValueError("The number of markers in freemocap_data and qualisys_data must be the same.")
+ 
 
     freemocap_representative_frame = freemocap_data[representative_frame, :, :]
     qualisys_representative_frame = qualisys_data[representative_frame, :, :]
 
-    freemocap_extracted_frame = extract_specific_markers(data_marker_dimension=freemocap_representative_frame, list_of_markers=mediapipe_markers, markers_to_extract=markers_to_extract)
-    qualisys_extracted_frame = extract_specific_markers(data_marker_dimension=qualisys_representative_frame, list_of_markers=qualisys_markers, markers_to_extract=markers_to_extract)
+    transformation_matrix = run_least_squares_optimization(
+        data_to_transform=freemocap_representative_frame, 
+        reference_data=qualisys_representative_frame
+    )
 
-    transformation = run_least_squares_optimization(data_to_transform=freemocap_extracted_frame, reference_data=qualisys_extracted_frame)
+    # freemocap_data_transformed = apply_transformation(
+    #     transformation_matrix=transformation, 
+    #     data_to_transform=freemocap_data
+    # )
 
-    freemocap_data_transformed = apply_transformation(transformation_matrix=transformation, data_to_transform=freemocap_data)
-
-    # plot_3d_scatter(freemocap_data_transformed, qualisys_data)
-
-    return freemocap_data_transformed
+    return transformation_matrix
 
 if __name__ == "__main__":
     from pathlib import Path

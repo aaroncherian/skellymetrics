@@ -1,14 +1,51 @@
+from data_utils.data_builder import DataBuilder
+from data_utils.combine_3d_dataframe import combine_3d_dataframes
+
 from alignment.mocap_data_alignment import align_freemocap_and_qualisys_data
 from visualizations.scatter_3d import plot_3d_scatter
+from markers.mediapipe_markers import mediapipe_markers
+from markers.markers_to_extract import markers_to_extract
+from markers.qualisys_markers import qualisys_markers
+from alignment.transformations.apply_transformation import apply_transformation
 
-def main(freemocap_data,qualisys_data,representative_frame, plot_3d_scatter = False):
 
-    aligned_freemocap_data = align_freemocap_and_qualisys_data(freemocap_data=freemocap_data, qualisys_data=qualisys_data, representative_frame=representative_frame)
 
-    if plot_3d_scatter:
-        plot_3d_scatter(freemocap_data=aligned_freemocap_data, qualisys_data=qualisys_data)
-
+def main(freemocap_data_path,qualisys_data_path,representative_frame, create_scatter_plot = False):
+    freemocap_databuilder = DataBuilder(path_to_data=freemocap_data_path, marker_list=mediapipe_markers)
+    freemocap_data_dict = (freemocap_databuilder
+                .load_data()
+                .extract_common_markers(markers_to_extract=markers_to_extract)
+                .convert_extracted_data_to_dataframe()
+                .build())
     
+    qualisys_databuilder = DataBuilder(path_to_data=qualisys_data_path, marker_list=qualisys_markers)
+    qualisys_data_dict = (qualisys_databuilder
+                .load_data()
+                .extract_common_markers(markers_to_extract=markers_to_extract)
+                .convert_extracted_data_to_dataframe()
+                .build())
+    
+    transformation_matrix = align_freemocap_and_qualisys_data(freemocap_data_dict['extracted_data_3d_array'],qualisys_data_dict['extracted_data_3d_array'],representative_frame)
+    aligned_freemocap_data = apply_transformation(transformation_matrix=transformation_matrix, data_to_transform=freemocap_data_dict['original_data_3d_array'])
+    
+    aligned_freemocap_data_builder = DataBuilder(data_array=aligned_freemocap_data, marker_list=mediapipe_markers)
+    aligned_freemocap_data_dict = (aligned_freemocap_data_builder
+                                .extract_common_markers(markers_to_extract=markers_to_extract)
+                                .convert_extracted_data_to_dataframe()
+                                .build())
+
+    if create_scatter_plot:
+        plot_3d_scatter(freemocap_data=aligned_freemocap_data, qualisys_data=qualisys_data_dict['original_data_3d_array'])
+
+    freemocap_dataframe = aligned_freemocap_data_dict['dataframe_of_extracted_3d_data']
+    qualisys_dataframe = qualisys_data_dict['dataframe_of_extracted_3d_data']
+
+    freemocap_dataframe['system'] = 'freemocap'
+    qualisys_dataframe['system'] = 'qualisys'
+
+    combined_dataframe = combine_3d_dataframes(dataframe_A=freemocap_dataframe, dataframe_B=qualisys_dataframe)
+
+
     f = 2 
 
 
@@ -22,7 +59,16 @@ if __name__ == '__main__':
     freemocap_data_path = r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\output_data\mediapipe_body_3d_xyz.npy"
     freemocap_output_folder_path = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\output_data")
 
-    freemocap_data = np.load(freemocap_data_path)
+    # freemocap_data = np.load(freemocap_data_path)
+
+    freemocap_databuilder = DataBuilder(path_to_data=freemocap_data_path, marker_list=mediapipe_markers)
+    freemocap_data_dict = (freemocap_databuilder
+                    .load_data()
+                    .extract_common_markers(markers_to_extract=markers_to_extract)
+                    .convert_extracted_data_to_dataframe()
+                    .build())
+
+
     qualisys_data = np.load(qualisys_data_path)
 
-    main(freemocap_data,qualisys_data,800)
+    main(freemocap_data_path=freemocap_data_path,qualisys_data_path=qualisys_data_path,representative_frame=800)
