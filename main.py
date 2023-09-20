@@ -66,16 +66,4 @@ if __name__ == '__main__':
     freemocap_data_path = r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\output_data\mediapipe_body_3d_xyz.npy"
     freemocap_output_folder_path = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\output_data")
 
-    # freemocap_data = np.load(freemocap_data_path)
-
-    freemocap_databuilder = DataBuilder(path_to_data=freemocap_data_path, marker_list=mediapipe_markers)
-    freemocap_data_dict = (freemocap_databuilder
-                    .load_data()
-                    .extract_common_markers(markers_to_extract=markers_to_extract)
-                    .convert_extracted_data_to_dataframe()
-                    .build())
-
-
-    qualisys_data = np.load(qualisys_data_path)
-
     main(freemocap_data_path=freemocap_data_path,qualisys_data_path=qualisys_data_path,representative_frame=800)
