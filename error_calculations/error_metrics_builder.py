@@ -42,7 +42,9 @@ class ErrorMetricsBuilder:
         
         # Calculate squared errors for x, y, z dimensions
         for coord in ['x', 'y', 'z']:
-            squared_error_dataframe[f'{coord}_error'] = self._calculate_squared_error(pivot_df[coord]['freemocap'], pivot_df[coord]['qualisys']).reset_index(drop=True) #need to reset index here to make sure there's not a dataframe index mismatch
+            system_A_name = pivot_df.columns.get_level_values(1).unique().tolist()[0]
+            system_B_name = pivot_df.columns.get_level_values(1).unique().tolist()[1]
+            squared_error_dataframe[f'{coord}_error'] = self._calculate_squared_error(pivot_df[coord][system_A_name], pivot_df[coord][system_B_name]).reset_index(drop=True) #need to reset index here to make sure there's not a dataframe index mismatch
         
         self.squared_error_dataframe = squared_error_dataframe
         return self
