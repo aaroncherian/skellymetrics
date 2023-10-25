@@ -7,15 +7,15 @@ from alignment.transformations.apply_transformation import apply_transformation
 from debug_plots.scatter_3d import plot_3d_scatter
 
 from markers.mediapipe_markers import mediapipe_markers
-from markers.markers_to_extract import markers_to_extract
-from markers.qualisys_markers import qualisys_markers
+# from markers.markers_to_extract import markers_to_extract
+# from markers.qualisys_markers import qualisys_markers
 
 from error_calculations.get_error_metrics import get_error_metrics
 
 from dash_app.run_dash_app import run_dash_app
 
 
-def main(freemocap_data_path,qualisys_data_path,representative_frame, create_scatter_plot = False):
+def main(freemocap_data_path,qualisys_data_path,representative_frame, qualisys_marker_list, markers_to_extract, create_scatter_plot = False):
     freemocap_databuilder = DataBuilder(path_to_data=freemocap_data_path, marker_list=mediapipe_markers)
     freemocap_data_dict = (freemocap_databuilder
                 .load_data()
@@ -23,7 +23,7 @@ def main(freemocap_data_path,qualisys_data_path,representative_frame, create_sca
                 .convert_extracted_data_to_dataframe()
                 .build())
     
-    qualisys_databuilder = DataBuilder(path_to_data=qualisys_data_path, marker_list=qualisys_markers)
+    qualisys_databuilder = DataBuilder(path_to_data=qualisys_data_path, marker_list=qualisys_marker_list)
     qualisys_data_dict = (qualisys_databuilder
                 .load_data()
                 .extract_common_markers(markers_to_extract=markers_to_extract)
@@ -61,9 +61,49 @@ if __name__ == '__main__':
 
     from pathlib import Path
     import numpy as np
+    # from markers.qualisys_markers import qualisys_markers
+    # from markers.markers_to_extract import markers_to_extract
 
-    qualisys_data_path = r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\qualisys_MDN_NIH_Trial3\output_data\clipped_qualisys_skel_3d.npy"
-    freemocap_data_path = r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\output_data\mediapipe_body_3d_xyz.npy"
-    freemocap_output_folder_path = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\output_data")
+    prosthetic_qualisys_markers = [
+        'right_hip',
+        'left_hip',
+        'right_knee',
+        'left_knee',
+        'right_ankle',
+        'left_ankle',
+        'right_heel',
+        'left_heel',
+        'right_foot_index',
+        'left_foot_index',
+    ]
 
-    main(freemocap_data_path=freemocap_data_path,qualisys_data_path=qualisys_data_path,representative_frame=800)
+    prosthetic_markers_to_extract = [
+        'right_hip',
+        'left_hip',
+        'right_knee',
+        'left_knee',
+        'right_ankle',
+        'left_ankle',
+        'right_heel',
+        'left_heel',
+        'right_foot_index',
+        'left_foot_index',
+    ]
+
+
+    
+
+    path_to_recording_folder = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1")
+    freemocap_data_path = path_to_recording_folder/'output_data'/'mediapipe_body_3d_xyz.npy'
+    qualisys_data_path = path_to_recording_folder/'qualisys'/'qualisys_joint_centers_3d_xyz.npy'
+    freemocap_output_folder_path = path_to_recording_folder/'output_data'
+
+    # qualisys_data_path = r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\qualisys\qualisys_joint_centers_3d_xyz.npy"
+    # freemocap_data_path = r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\qualisys\qualisys_joint_centers_3d_xyz.npy"
+    # freemocap_output_folder_path = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\output_data")
+
+    freemocap_data = np.load(freemocap_data_path)
+    qualisys_data = np.load(qualisys_data_path)
+
+
+    freemocap_data_transformed = main(freemocap_data_path=freemocap_data_path, qualisys_data_path=qualisys_data_path, representative_frame=230, qualisys_marker_list=prosthetic_qualisys_markers, markers_to_extract=prosthetic_markers_to_extract, create_scatter_plot=False)
