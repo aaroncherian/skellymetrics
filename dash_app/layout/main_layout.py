@@ -28,6 +28,10 @@ def get_layout(marker_figure, joint_rmse_figure, list_of_marker_buttons, indicat
                 get_joint_rmse_plot_card(joint_rmse_figure['x_error'], 'X Dimension', color_of_cards),
                 get_joint_rmse_plot_card(joint_rmse_figure['y_error'], 'Y Dimension', color_of_cards),
                 get_joint_rmse_plot_card(joint_rmse_figure['z_error'], 'Z Dimension', color_of_cards),
+                # Add rows for velocity
+                get_joint_rmse_plot_card(joint_rmse_figure['x_velocity_error'], 'X Velocity', color_of_cards),
+                get_joint_rmse_plot_card(joint_rmse_figure['y_velocity_error'], 'Y Velocity', color_of_cards),
+                get_joint_rmse_plot_card(joint_rmse_figure['z_velocity_error'], 'Z Velocity', color_of_cards),
             ]),
             dbc.Row([
                 dbc.Col(get_scatter_plot_card(marker_figure, color_of_cards), width={"size": 6, "offset": 3})

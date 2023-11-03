@@ -1,11 +1,12 @@
 import numpy as np
-import pandas as pd 
+import pandas as pd
 
 # Define constants
 DATA_3D_ARRAY = 'original_data_3d_array'
 EXTRACTED_3D_ARRAY = 'extracted_data_3d_array'
 DATAFRAME_OF_ORIGINAL_3D_DATA = 'dataframe_of_original_3d_data'
 DATAFRAME_OF_EXTRACTED_3D_DATA = 'dataframe_of_extracted_3d_data'
+
 
 class DataBuilder:
     def __init__(self, marker_list, path_to_data=None, data_array=None):
@@ -23,10 +24,10 @@ class DataBuilder:
             self.original_data_3d_array = data_array
         else:
             self.original_data_3d_array = None
-            
+
         self.data_array = data_array
         self.marker_list = marker_list
-   
+
         self.extracted_3d_array = None
         self.dataframe_of_original_3d_data = None
         self.dataframe_of_extracted_3d_data = None
@@ -43,8 +44,8 @@ class DataBuilder:
         else:
             raise ValueError("Either path_to_data or data_array must be provided.")
         return self
-    
-    def extract_common_markers(self, markers_to_extract:list):
+
+    def extract_common_markers(self, markers_to_extract: list):
         """
         Extract markers from a specified list 
         Returns:
@@ -55,7 +56,7 @@ class DataBuilder:
 
         if self.original_data_3d_array is None:
             raise ValueError(f"{DATA_3D_ARRAY} is None. You must run load_data() first.")
-            
+
         self.extracted_3d_array = self._extract_specific_markers(
             data_marker_dimension=self.original_data_3d_array,
             list_of_markers=self.marker_list,
@@ -76,9 +77,9 @@ class DataBuilder:
         self.dataframe_of_original_3d_data = self._convert_3d_array_to_dataframe(
             data_3d_array=self.original_data_3d_array,
             data_marker_list=self.original_data_3d_array)
-        
+
         return self
-    
+
     def convert_extracted_data_to_dataframe(self):
         """
         Convert the 3D data to a DataFrame.
@@ -89,13 +90,12 @@ class DataBuilder:
         # Check if the target array exists
         if self.extracted_3d_array is None:
             raise ValueError(f"The target 3D array is None. You must run extract_common_markers() first.")
-        
+
         self.dataframe_of_extracted_3d_data = self._convert_3d_array_to_dataframe(
             data_3d_array=self.extracted_3d_array,
             data_marker_list=self.markers_to_extract)
-        
+
         return self
-        
 
     def build(self):
         """
@@ -111,7 +111,8 @@ class DataBuilder:
             DATAFRAME_OF_EXTRACTED_3D_DATA: self.dataframe_of_extracted_3d_data
         }
 
-    def _extract_specific_markers(self,data_marker_dimension:np.ndarray, list_of_markers:list, markers_to_extract:list):
+    def _extract_specific_markers(self, data_marker_dimension: np.ndarray, list_of_markers: list,
+                                  markers_to_extract: list):
         """
         Extracts specific markers for a frame of a 3D data array based on the given indices and markers to extract.
 
@@ -126,13 +127,13 @@ class DataBuilder:
         """
         # Identify the column indices that correspond to the markers to extract
         col_indices = [list_of_markers.index(marker) for marker in markers_to_extract if marker in list_of_markers]
-        
+
         # Extract the relevant columns from the data array
-        extracted_data = data_marker_dimension[:,col_indices, :]
+        extracted_data = data_marker_dimension[:, col_indices, :]
 
         return extracted_data
-    
-    def _convert_3d_array_to_dataframe(self, data_3d_array:np.ndarray, data_marker_list:list):
+
+    def _convert_3d_array_to_dataframe(self, data_3d_array: np.ndarray, data_marker_list: list):
         """
         Convert the FreeMoCap data from a numpy array to a pandas DataFrame.
 
@@ -161,12 +162,38 @@ class DataBuilder:
                 y_list.append(data_3d_array[frame, marker, 1])
                 z_list.append(data_3d_array[frame, marker, 2])
 
+        x_velocity = np.diff(x_list)
+        y_velocity = np.diff(y_list)
+        z_velocity = np.diff(z_list)
+        # Append a 0 to the beginning of the velocity lists to make them the same length as the position lists
+        x_velocity = np.insert(x_velocity, 0, 0)
+        y_velocity = np.insert(y_velocity, 0, 0)
+        z_velocity = np.insert(z_velocity, 0, 0)
+
+        x_acceleration = np.diff(x_velocity)
+        y_acceleration = np.diff(y_velocity)
+        z_acceleration = np.diff(z_velocity)
+        # Append a 0 to the beginning of the acceleration lists to make them the same length as the position lists
+        x_acceleration = np.insert(x_acceleration, 0, 0)
+        y_acceleration = np.insert(y_acceleration, 0, 0)
+        z_acceleration = np.insert(z_acceleration, 0, 0)
+
+        # Make sure they're all the same length
+        assert len(frame_list) == len(marker_list) == len(x_list) == len(y_list) == len(z_list) == len(x_velocity) == len(y_velocity) == len(z_velocity) == len(x_acceleration) == len(y_acceleration) == len(z_acceleration), "The lists are not all the same length."
+
+
         data_frame_marker_dim_dataframe = pd.DataFrame({
             'frame': frame_list,
             'marker': marker_list,
             'x': x_list,
             'y': y_list,
-            'z': z_list
+            'z': z_list,
+            'x_velocity': x_velocity,
+            'y_velocity': y_velocity,
+            'z_velocity': z_velocity,
+            'x_acceleration': x_acceleration,
+            'y_acceleration': y_acceleration,
+            'z_acceleration': z_acceleration
         })
 
         return data_frame_marker_dim_dataframe

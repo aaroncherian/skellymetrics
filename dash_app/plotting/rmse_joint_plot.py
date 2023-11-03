@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 
 def create_rmse_joint_bar_plot(df):
-    dimensions = ['x_error', 'y_error', 'z_error']
+    dimensions = ['x_error', 'y_error', 'z_error', 'x_velocity_error', 'y_velocity_error', 'z_velocity_error']
     figures = {}
     
     # Calculate the maximum RMSE value across all dimensions
