@@ -162,25 +162,6 @@ class DataBuilder:
                 y_list.append(data_3d_array[frame, marker, 1])
                 z_list.append(data_3d_array[frame, marker, 2])
 
-        x_velocity = np.diff(x_list)
-        y_velocity = np.diff(y_list)
-        z_velocity = np.diff(z_list)
-        # Append a 0 to the beginning of the velocity lists to make them the same length as the position lists
-        x_velocity = np.insert(x_velocity, 0, 0)
-        y_velocity = np.insert(y_velocity, 0, 0)
-        z_velocity = np.insert(z_velocity, 0, 0)
-
-        x_acceleration = np.diff(x_velocity)
-        y_acceleration = np.diff(y_velocity)
-        z_acceleration = np.diff(z_velocity)
-        # Append a 0 to the beginning of the acceleration lists to make them the same length as the position lists
-        x_acceleration = np.insert(x_acceleration, 0, 0)
-        y_acceleration = np.insert(y_acceleration, 0, 0)
-        z_acceleration = np.insert(z_acceleration, 0, 0)
-
-        # Make sure they're all the same length
-        assert len(frame_list) == len(marker_list) == len(x_list) == len(y_list) == len(z_list) == len(x_velocity) == len(y_velocity) == len(z_velocity) == len(x_acceleration) == len(y_acceleration) == len(z_acceleration), "The lists are not all the same length."
-
 
         data_frame_marker_dim_dataframe = pd.DataFrame({
             'frame': frame_list,
@@ -188,12 +169,6 @@ class DataBuilder:
             'x': x_list,
             'y': y_list,
             'z': z_list,
-            'x_velocity': x_velocity,
-            'y_velocity': y_velocity,
-            'z_velocity': z_velocity,
-            'x_acceleration': x_acceleration,
-            'y_acceleration': y_acceleration,
-            'z_acceleration': z_acceleration
-        })
+            })
 
         return data_frame_marker_dim_dataframe

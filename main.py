@@ -1,3 +1,5 @@
+import pandas as pd
+
 from data_utils.data_builder import DataBuilder
 from data_utils.combine_3d_dataframe import combine_3d_dataframes
 
@@ -13,6 +15,25 @@ from markers.mediapipe_markers import mediapipe_markers
 from error_calculations.get_error_metrics import get_error_metrics
 
 from dash_app.run_dash_app import run_dash_app
+
+
+def calculate_velocity(data_frame: pd.DataFrame) -> pd.DataFrame:
+
+    for marker in data_frame['marker'].unique():
+        x = data_frame[data_frame['marker'] == marker]['x']
+        y = data_frame[data_frame['marker'] == marker]['y']
+        z = data_frame[data_frame['marker'] == marker]['z']
+
+        x_velocity = x.diff()
+        y_velocity = y.diff()
+        z_velocity = z.diff()
+
+        # add the velocity columns to the dataframe
+        data_frame.loc[data_frame['marker'] == marker, 'x_velocity'] = x_velocity
+        data_frame.loc[data_frame['marker'] == marker, 'y_velocity'] = y_velocity
+        data_frame.loc[data_frame['marker'] == marker, 'z_velocity'] = z_velocity
+
+    return data_frame
 
 
 def main(freemocap_data_path, qualisys_data_path, representative_frame, qualisys_marker_list, markers_to_extract,
@@ -52,6 +73,9 @@ def main(freemocap_data_path, qualisys_data_path, representative_frame, qualisys
 
     freemocap_dataframe['system'] = 'freemocap'
     qualisys_dataframe['system'] = 'qualisys'
+
+    freemocap_dataframe = calculate_velocity(data_frame=freemocap_dataframe)
+    qualisys_dataframe = calculate_velocity(data_frame=qualisys_dataframe)
 
     combined_dataframe = combine_3d_dataframes(dataframe_A=freemocap_dataframe, dataframe_B=qualisys_dataframe)
     error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_dataframe)
