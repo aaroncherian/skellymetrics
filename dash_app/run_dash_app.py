@@ -20,7 +20,7 @@ from dash_app.callbacks.marker_button_color_callback import register_marker_butt
 
 
 COLOR_OF_CARDS = '#F3F5F7'
-FRAME_SKIP_INTERVAL = 25
+FRAME_SKIP_INTERVAL = 5
 
 
 def run_dash_app(dataframe_of_3d_data, rmse_dataframe, absolute_error_dataframe):

@@ -16,3 +16,10 @@ markers_to_extract = [
     'left_foot_index',
     'right_foot_index',
 ]
+
+# markers_to_extract = [
+#     'left_shoulder',
+#     'right_shoulder',
+#     'left_ankle',
+#     'right_ankle',
+# ]

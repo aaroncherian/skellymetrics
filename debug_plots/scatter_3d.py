@@ -18,9 +18,9 @@ def plot_3d_scatter(freemocap_data, qualisys_data):
         ax.set_title(f"Frame {f}")
         fig.canvas.draw_idle()
 
-    mean_x = (np.mean(qualisys_data[:, :, 0]) + np.mean(freemocap_data[:, :, 0])) / 2
-    mean_y = (np.mean(qualisys_data[:, :, 1]) + np.mean(freemocap_data[:, :, 1])) / 2
-    mean_z = (np.mean(qualisys_data[:, :, 2]) + np.mean(freemocap_data[:, :, 2])) / 2
+    mean_x = (np.nanmean(qualisys_data[:, :, 0]) + np.nanmean(freemocap_data[:, :, 0])) / 2
+    mean_y = (np.nanmean(qualisys_data[:, :, 1]) + np.nanmean(freemocap_data[:, :, 1])) / 2
+    mean_z = (np.nanmean(qualisys_data[:, :, 2]) + np.nanmean(freemocap_data[:, :, 2])) / 2
 
     ax_range = 1000
     limit_x = mean_x + ax_range
