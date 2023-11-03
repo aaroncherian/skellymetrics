@@ -117,8 +117,7 @@ class ErrorMetricsBuilder:
 
         # Calculate overall RMSE (turn the datafrom into a 1d array with all the error values)
         overall_rmse = self._calculate_rmse_from_squared_error(
-            self.squared_error_dataframe[['x_error', 'y_error', 'z_error', 'x_velocity_error', 'y_velocity_error',
-                                          'z_velocity_error']].values.flatten())
+            self.squared_error_dataframe[['x_error', 'y_error', 'z_error']].values.flatten())
         overall_rmse = pd.DataFrame(
             {'marker': 'All', 'dimension': 'Overall', 'coordinate': 'All', 'RMSE': [overall_rmse]})
 

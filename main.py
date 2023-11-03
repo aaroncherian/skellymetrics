@@ -89,8 +89,49 @@ def main(freemocap_data_path, qualisys_data_path, representative_frame, qualisys
 if __name__ == '__main__':
     from pathlib import Path
     import numpy as np
-    from markers.qualisys_markers import qualisys_markers
-    from markers.markers_to_extract import markers_to_extract
+    # from markers.qualisys_markers import qualisys_markers
+    # from markers.markers_to_extract import markers_to_extract
+
+    qualisys_markers = [
+        'head',
+        'right_shoulder',
+        'left_shoulder',
+        'right_elbow',
+        'left_elbow',
+        'right_wrist',
+        'left_wrist',
+        'right_hand',
+        'left_hand',
+        'right_hip',
+        'left_hip',
+        'right_knee',
+        'left_knee',
+        'right_ankle',
+        'left_ankle',
+        'right_heel',
+        'left_heel',
+        'right_foot_index',
+        'left_foot_index',
+    ]
+
+    markers_to_extract = [
+        'left_shoulder',
+        'right_shoulder',
+        'left_elbow',
+        'right_elbow',
+        'left_wrist',
+        'right_wrist',
+        'left_hip',
+        'right_hip',
+        'left_knee',
+        'right_knee',
+        'left_ankle',
+        'right_ankle',
+        'left_heel',
+        'right_heel',
+        'left_foot_index',
+        'right_foot_index',
+    ]
 
     # prosthetic_qualisys_markers = [
     #     'right_hip',
@@ -119,7 +160,7 @@ if __name__ == '__main__':
     # ]
 
     path_to_recording_folder = Path(
-        r"D:\data_storage\freemocap_validation\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3")
+        r"D:\data_storage\freemocap_validation\sesh_2023-05-17_13_48_44_MDN_treadmill_2\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
     freemocap_data_path = path_to_recording_folder / 'output_data' / 'mediapipe_body_3d_xyz.npy'
     qualisys_data_path = path_to_recording_folder / 'qualisys' / 'qualisys_joint_centers_3d_xyz.npy'
     freemocap_output_folder_path = path_to_recording_folder / 'output_data'
@@ -132,5 +173,5 @@ if __name__ == '__main__':
     # qualisys_data = np.load(qualisys_data_path)
 
     main(freemocap_data_path=freemocap_data_path, qualisys_data_path=qualisys_data_path,
-         representative_frame=230, qualisys_marker_list=qualisys_markers,
+         representative_frame=400, qualisys_marker_list=qualisys_markers,
          markers_to_extract=markers_to_extract, create_scatter_plot=False)
