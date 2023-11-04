@@ -80,6 +80,11 @@ def main(freemocap_data_path, qualisys_data_path, representative_frame, qualisys
     combined_dataframe = combine_3d_dataframes(dataframe_A=freemocap_dataframe, dataframe_B=qualisys_dataframe)
     error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_dataframe)
 
+    error_metrics_dict['absolute_error_dataframe'].to_csv(
+        'absolute_error_dataframe.csv', index=False)
+    error_metrics_dict['rmse_dataframe'].to_csv('rmse_dataframe.csv',
+                                                index=False)
+
     run_dash_app(dataframe_of_3d_data=combined_dataframe, rmse_dataframe=error_metrics_dict['rmse_dataframe'],
                  absolute_error_dataframe=error_metrics_dict['absolute_error_dataframe'])
 
@@ -173,5 +178,5 @@ if __name__ == '__main__':
     # qualisys_data = np.load(qualisys_data_path)
 
     main(freemocap_data_path=freemocap_data_path, qualisys_data_path=qualisys_data_path,
-         representative_frame=400, qualisys_marker_list=qualisys_markers,
+         representative_frame=400, qualisys_marker_list=qualisys_markers,  # change to 230 for NIH
          markers_to_extract=markers_to_extract, create_scatter_plot=False)
