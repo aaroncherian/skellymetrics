@@ -1,5 +1,5 @@
 from dash import Output, Input, Dash, State, ALL
-from dash_app.plotting.joint_trajectory_plots import create_joint_trajectory_plots
+from dash_app.plotting.joint_trajectory_plots import create_dash_trajectory_plots
 from dash_app.plotting.absolute_error_plots import create_absolute_error_plots
 from dash_app.plotting.shaded_error_plots import create_shaded_error_plots
 
@@ -12,7 +12,7 @@ def register_plot_update_callback(app: Dash, dataframe_of_3d_data, absolute_erro
     )
     def update_trajectory_plot(stored_data):
         selected_marker = stored_data['marker'] if stored_data else None
-        return create_joint_trajectory_plots(selected_marker, dataframe_of_3d_data, COLOR_OF_CARDS)
+        return create_dash_trajectory_plots(selected_marker, dataframe_of_3d_data, COLOR_OF_CARDS)
     
     @app.callback(
         Output('error-plots', 'children'),

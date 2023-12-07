@@ -1,6 +1,13 @@
 import plotly.express as px
 from dash import dcc
 
+def create_dash_trajectory_plots(marker, dataframe_of_3d_data,color_of_cards):
+    """
+    Converts the joint trajectory figures into Dash components.
+    """
+    fig_x, fig_y, fig_z = create_joint_trajectory_plots(marker, dataframe_of_3d_data,color_of_cards)
+    return [dcc.Graph(figure=fig_x), dcc.Graph(figure=fig_y), dcc.Graph(figure=fig_z)]
+
 
 def create_joint_trajectory_plots(marker, dataframe_of_3d_data, color_of_cards):
     df_marker = dataframe_of_3d_data[dataframe_of_3d_data.marker == marker]
@@ -24,5 +31,5 @@ def create_joint_trajectory_plots(marker, dataframe_of_3d_data, color_of_cards):
     fig_z.update_layout(paper_bgcolor=color_of_cards, height=trajectory_plot_height)
 
     # Return the list of Plotly figures
-    return [dcc.Graph(figure=fig_x), dcc.Graph(figure=fig_y), dcc.Graph(figure=fig_z)]
+    return fig_x, fig_y, fig_z
 
