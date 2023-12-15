@@ -1,5 +1,6 @@
 from plotly.subplots import make_subplots
 import plotly.io as pio
+from dash_app.ui_components.indicators import create_indicator
 
 
 
@@ -22,12 +23,13 @@ def create_subplots_from_individual_figs(fig_x, fig_y, fig_z, color_of_cards):
     return fig
 
 def create_indicators(rmse_values):
-    return [
-        create_indicator(rmse_values['total'], "Total RMSE (mm)"),
-        create_indicator(rmse_values['x'], "X RMSE (mm)", color_of_text='red'),
-        create_indicator(rmse_values['y'], "Y RMSE (mm)", color_of_text='green'),
-        create_indicator(rmse_values['z'], "Z RMSE (mm)", color_of_text='blue'),
-    ]
+    rmse_total_indicator = create_indicator(rmse_values['total'], "Total RMSE")
+    rmse_x_indicator = create_indicator(rmse_values['x'], "X RMSE", color_of_text='red', margins_dict = dict(l=1, r=1, b=1, t=1))
+    rmse_y_indicator = create_indicator(rmse_values['y'], "Y RMSE", color_of_text='green', margins_dict = dict(l=1, r=1, b=1, t=1))
+    rmse_z_indicator = create_indicator(rmse_values['z'], "Z RMSE", color_of_text='blue', margins_dict = dict(l=1, r=1, b=1, t=1))
+    indicators = [rmse_total_indicator, rmse_x_indicator, rmse_y_indicator, rmse_z_indicator]
+
+    return indicators
 
 def fig_to_html(fig):
     return pio.to_html(fig, full_html=False)

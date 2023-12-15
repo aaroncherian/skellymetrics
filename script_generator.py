@@ -2,7 +2,7 @@ if __name__ == '__main__':
     from pathlib import Path
     from dash_app.data_utils.load_data import combine_freemocap_and_qualisys_into_dataframe
     from dash_app.data_utils.file_manager import FileManager
-    from dash_app.report_generation.test import generate_html_report
+    from dash_app.report_generation.generate_html_report import generate_html_report
 
     path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3")
 
