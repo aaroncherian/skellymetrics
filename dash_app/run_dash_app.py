@@ -18,27 +18,28 @@ from dash_app.callbacks.plot_update_callback import register_plot_update_callbac
 from dash_app.callbacks.marker_button_color_callback import register_marker_button_color_callback
 from dash_app.callbacks.report_download_callback import register_report_download_callback
 
-
+from models.mocap_data_model import MoCapData
 
 COLOR_OF_CARDS = '#F3F5F7'
 FRAME_SKIP_INTERVAL = 5
 
 
-def run_dash_app(dataframe_of_3d_data, rmse_dataframe, absolute_error_dataframe):
+
+def run_dash_app(position_data_and_error:MoCapData, velocity_data_and_error:MoCapData):
     # Initialize Dash App
     app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
     register_selected_marker_callback(app) #register a callback to find the selected marker and stored it
     register_marker_name_callbacks(app) #register a callback to update the marker name wherever it is listed in the app
-    register_info_card_callback(app, rmse_dataframe)
-    register_plot_update_callback(app, dataframe_of_3d_data, absolute_error_dataframe, COLOR_OF_CARDS)
+    register_info_card_callback(app, position_data_and_error.rmse_dataframe)
+    register_plot_update_callback(app, position_data_and_error, velocity_data_and_error, COLOR_OF_CARDS)
     register_marker_button_color_callback(app)
-    register_report_download_callback(app, dataframe_of_3d_data, rmse_dataframe)
+    register_report_download_callback(app, position_data_and_error.absolute_error_dataframe, position_data_and_error.rmse_dataframe)
 
     load_figure_template('LUX')
 
     # Create Figures and Components
     scatter_3d_figure, indicators, marker_buttons_list, joint_rmse_plot = prepare_dashboard_elements(
-        dataframe_of_3d_data, rmse_dataframe, FRAME_SKIP_INTERVAL, COLOR_OF_CARDS)
+        position_data_and_error, velocity_data_and_error, FRAME_SKIP_INTERVAL, COLOR_OF_CARDS)
 
     app.layout = get_layout(marker_figure=scatter_3d_figure,
                             joint_rmse_figure=joint_rmse_plot,

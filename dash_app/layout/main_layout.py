@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import dcc
-from .cards.marker_trajectory_card import get_marker_trajectory_card
+from .cards.marker_position_card import get_marker_position_card
+from .cards.marker_velocity_card import get_marker_velocity_card
 from .cards.marker_buttons_card import get_marker_buttons_card
 from .cards.scatter_plot_card import get_scatter_plot_card
 from .cards.rmse_card import get_rmse_card
@@ -33,8 +34,12 @@ def get_layout(marker_figure, joint_rmse_figure, list_of_marker_buttons, indicat
                 dbc.Col(get_scatter_plot_card(marker_figure, color_of_cards), width={"size": 6, "offset": 3})
             ]),
             dbc.Row([
-                get_marker_trajectory_card(color_of_cards)
+                get_marker_position_card(color_of_cards)
             ]),
+            dbc.Row([
+                get_marker_velocity_card(color_of_cards)
+            ]),
+
             dbc.Row([
                 get_absolute_error_plots_card(color_of_cards)
             ]),

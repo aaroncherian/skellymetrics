@@ -13,6 +13,7 @@ from markers.mediapipe_markers import mediapipe_markers
 from error_calculations.get_error_metrics import get_error_metrics
 
 from dash_app.run_dash_app import run_dash_app
+from models.mocap_data_model import MoCapData
 
 def calculate_velocity(data_3d_array):
     return np.diff(data_3d_array, axis=0)
@@ -135,9 +136,19 @@ def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,represe
     velocity_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'velocity_absolute_error_dataframe.csv', index = False)
     velocity_error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'velocity_rmse_dataframe.csv', index = False)
 
+    position_data = MoCapData(
+        joint_dataframe=combined_position_dataframe,
+        rmse_dataframe=position_error_metrics_dict['rmse_dataframe'],
+        absolute_error_dataframe=position_error_metrics_dict['absolute_error_dataframe']
+    )
 
-    run_dash_app(dataframe_of_3d_data=combined_position_dataframe, rmse_dataframe=position_error_metrics_dict['rmse_dataframe'], absolute_error_dataframe=position_error_metrics_dict['absolute_error_dataframe'])
+    velocity_data = MoCapData(
+        joint_dataframe=combined_velocity_dataframe,
+        rmse_dataframe=velocity_error_metrics_dict['rmse_dataframe'],
+        absolute_error_dataframe=velocity_error_metrics_dict['absolute_error_dataframe']
+    )
 
+    run_dash_app(position_data, velocity_data)
     f = 2 
 
 
