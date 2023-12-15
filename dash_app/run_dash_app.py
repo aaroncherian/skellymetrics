@@ -16,6 +16,7 @@ from dash_app.callbacks.selected_marker_callback import register_selected_marker
 from dash_app.callbacks.info_card_callback import register_info_card_callback
 from dash_app.callbacks.plot_update_callback import register_plot_update_callback
 from dash_app.callbacks.marker_button_color_callback import register_marker_button_color_callback
+from dash_app.callbacks.report_download_callback import register_report_download_callback
 
 
 
@@ -31,6 +32,7 @@ def run_dash_app(dataframe_of_3d_data, rmse_dataframe, absolute_error_dataframe)
     register_info_card_callback(app, rmse_dataframe)
     register_plot_update_callback(app, dataframe_of_3d_data, absolute_error_dataframe, COLOR_OF_CARDS)
     register_marker_button_color_callback(app)
+    register_report_download_callback(app, dataframe_of_3d_data, rmse_dataframe)
 
     load_figure_template('LUX')
 

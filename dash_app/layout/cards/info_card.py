@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import html, dcc
 
 def get_info_card(color_of_cards):
     card_content = dbc.Card([
@@ -22,14 +22,22 @@ def get_info_card(color_of_cards):
             ]
         ),
     ], className="mb-4 mt-4")
+
+    save_button = dbc.Button("Save Report", id="save-report-btn", color="primary", className="mb-2")
+    download_component = dcc.Download(id="download-report")
+
     
-    return html.Div([card_content], style={
+    return html.Div([
+        card_content,
+        html.Div(save_button, style={'textAlign': 'center'}),  # Button below the card
+        download_component
+    ], style={
         'position': 'fixed',
         'top': '0',
         'right': '0',
         'height': '100vh',
         'overflow-y': 'auto',  
         'z-index': 1000,  
-        'backgroundColor': 'white'
+        'backgroundColor': color_of_cards
     })
 

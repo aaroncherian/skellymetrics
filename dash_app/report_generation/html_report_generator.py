@@ -77,6 +77,8 @@ def generate_html_report(dataframe_of_3d_data, rmse_dataframe, filename="traject
 
     html_content += "</body></html>"
 
-    with open(filename, "w", encoding='utf-8') as file:
-        file.write(html_content)
-    print(f"Report saved as {filename}")
+    return html_content
+
+    # with open(filename, "w", encoding='utf-8') as file:
+    #     file.write(html_content)
+    # print(f"Report saved as {filename}")

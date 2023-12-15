@@ -41,17 +41,20 @@ def get_layout(marker_figure, joint_rmse_figure, list_of_marker_buttons, indicat
             dbc.Row([
                 get_error_shading_plot_card(color_of_cards)
             ]),
+
         ],
         width={"size": 10, "order": "last"},
     )
 
+
     info_section = dbc.Col(
-    [
-        get_info_card(color_of_cards)
-    ],
-    width={"size": 1, "order": "last"},
-    id="info-section",
-)
+        [
+            get_info_card(color_of_cards), 
+        ],
+        width={"size": 1, "order": "last"},
+        id="info-section",
+    )
+
     return dbc.Container([
         dcc.Store(id='store-selected-marker'),  # Add the dcc.Store component here to store the marker name
         dbc.Row([sidebar, main_content, info_section]),
