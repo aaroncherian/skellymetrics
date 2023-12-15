@@ -12,4 +12,5 @@ if __name__ == '__main__':
     rmse_dataframe = file_manager.rmse_dataframe
     absolute_error_dataframe = file_manager.absolute_error_dataframe
     dataframe_of_3d_data = combine_freemocap_and_qualisys_into_dataframe(freemocap_3d_data=freemocap_data, qualisys_3d_data=qualisys_data)
-    generate_html_report(dataframe_of_3d_data)
+    generate_html_report(dataframe_of_3d_data,rmse_dataframe)
+    f = 2
