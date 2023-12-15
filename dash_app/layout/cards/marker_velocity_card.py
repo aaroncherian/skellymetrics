@@ -5,7 +5,7 @@ from .create_card import create_card
 def get_marker_velocity_card(color_of_cards):
     content = [
         html.H3(
-            id='selected-marker-trajectory',
+            id='selected-marker-velocity',
             children="Select a marker",
             className="text-info"
         ),
