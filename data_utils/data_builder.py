@@ -8,7 +8,7 @@ DATAFRAME_OF_ORIGINAL_3D_DATA = 'dataframe_of_original_3d_data'
 DATAFRAME_OF_EXTRACTED_3D_DATA = 'dataframe_of_extracted_3d_data'
 
 class DataBuilder:
-    def __init__(self, marker_list, path_to_data=None, data_array=None):
+    def __init__(self, marker_list, path_to_data=None, data_array=None, extracted_3d_array = None, dataframe_of_original_3d_data = None, dataframe_of_extracted_3d_data = None):
         """
         Initialize the DataFrameBuilder.
 
@@ -26,10 +26,14 @@ class DataBuilder:
             
         self.data_array = data_array
         self.marker_list = marker_list
+        self.extracted_3d_array = extracted_3d_array
+        self.dataframe_of_original_3d_data = dataframe_of_original_3d_data
+        self.dataframe_of_extracted_3d_data = dataframe_of_extracted_3d_data
+
    
-        self.extracted_3d_array = None
-        self.dataframe_of_original_3d_data = None
-        self.dataframe_of_extracted_3d_data = None
+        # self.extracted_3d_array = None
+        # self.dataframe_of_original_3d_data = None
+        # self.dataframe_of_extracted_3d_data = None
 
     def load_data(self):
         """
@@ -44,6 +48,7 @@ class DataBuilder:
             raise ValueError("Either path_to_data or data_array must be provided.")
         return self
     
+
     def extract_common_markers(self, markers_to_extract:list):
         """
         Extract markers from a specified list 

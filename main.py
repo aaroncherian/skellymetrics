@@ -16,50 +16,71 @@ from dash_app.run_dash_app import run_dash_app
 
 
 def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,representative_frame, qualisys_marker_list, markers_to_extract, create_scatter_plot = False):
-    freemocap_databuilder = DataBuilder(path_to_data=freemocap_data_path, marker_list=mediapipe_markers)
-    freemocap_data_dict = (freemocap_databuilder
+    freemocap_position_databuilder = DataBuilder(path_to_data=freemocap_data_path, marker_list=mediapipe_markers)
+    freemocap_position_data_dict = (freemocap_position_databuilder
                 .load_data()
                 .extract_common_markers(markers_to_extract=markers_to_extract)
                 .convert_extracted_data_to_dataframe()
                 .build())
     
-    qualisys_databuilder = DataBuilder(path_to_data=qualisys_data_path, marker_list=qualisys_marker_list)
-    qualisys_data_dict = (qualisys_databuilder
+    qualisys_position_databuilder = DataBuilder(path_to_data=qualisys_data_path, marker_list=qualisys_marker_list)
+    qualisys_position_data_dict = (qualisys_position_databuilder
                 .load_data()
                 .extract_common_markers(markers_to_extract=markers_to_extract)
                 .convert_extracted_data_to_dataframe()
                 .build())
     
+
+    qualisys_velocity_array = np.diff(qualisys_position_data_dict['original_data_3d_array'], axis = 0)
+    qualisys_velocity_databuilder = DataBuilder(data_array=qualisys_velocity_array, marker_list=markers_to_extract)
+    qualisys_velocity_data_dict = (qualisys_velocity_databuilder
+                .extract_common_markers(markers_to_extract=markers_to_extract)
+                .convert_extracted_data_to_dataframe()
+                .build())
+    
+
     # plot_3d_scatter(freemocap_data=freemocap_data_dict['extracted_data_3d_array'], qualisys_data=qualisys_data_dict['original_data_3d_array'])
     
-    transformation_matrix = align_freemocap_and_qualisys_data(freemocap_data_dict['extracted_data_3d_array'],qualisys_data_dict['extracted_data_3d_array'],representative_frame)
-    aligned_freemocap_data = apply_transformation(transformation_matrix=transformation_matrix, data_to_transform=freemocap_data_dict['original_data_3d_array'])
+    transformation_matrix = align_freemocap_and_qualisys_data(freemocap_position_data_dict['extracted_data_3d_array'],qualisys_position_data_dict['extracted_data_3d_array'],representative_frame)
+    aligned_freemocap_position_data = apply_transformation(transformation_matrix=transformation_matrix, data_to_transform=freemocap_position_data_dict['original_data_3d_array'])
     
-    aligned_freemocap_data_builder = DataBuilder(data_array=aligned_freemocap_data, marker_list=mediapipe_markers)
-    aligned_freemocap_data_dict = (aligned_freemocap_data_builder
+    aligned_freemocap_position_data_builder = DataBuilder(data_array=aligned_freemocap_position_data, marker_list=mediapipe_markers)
+    aligned_freemocap_position_data_dict = (aligned_freemocap_position_data_builder
+                                .extract_common_markers(markers_to_extract=markers_to_extract)
+                                .convert_extracted_data_to_dataframe()
+                                .build())
+    
+    aligned_freemocap_velocity_array = np.diff(aligned_freemocap_position_data_dict['original_data_3d_array'], axis = 0)
+    aligned_freemocap_velocity_databuilder = DataBuilder(data_array=aligned_freemocap_velocity_array, marker_list=markers_to_extract)
+    aligned_freemocap_velocity_data_dict = (aligned_freemocap_velocity_databuilder
                                 .extract_common_markers(markers_to_extract=markers_to_extract)
                                 .convert_extracted_data_to_dataframe()
                                 .build())
 
     if create_scatter_plot:
-        plot_3d_scatter(freemocap_data=aligned_freemocap_data, qualisys_data=qualisys_data_dict['original_data_3d_array'])
+        plot_3d_scatter(freemocap_data=aligned_freemocap_position_data, qualisys_data=qualisys_position_data_dict['original_data_3d_array'])
 
-    freemocap_dataframe = aligned_freemocap_data_dict['dataframe_of_extracted_3d_data']
-    qualisys_dataframe = qualisys_data_dict['dataframe_of_extracted_3d_data']
+    freemocap_position_dataframe = aligned_freemocap_position_data_dict['dataframe_of_extracted_3d_data']
+    qualisys_position_dataframe = qualisys_position_data_dict['dataframe_of_extracted_3d_data']
+    freemocap_position_dataframe['system'] = 'freemocap'
+    qualisys_position_dataframe['system'] = 'qualisys'
+    combined_position_dataframe = combine_3d_dataframes(dataframe_A=freemocap_position_dataframe, dataframe_B=qualisys_position_dataframe)
+    combined_position_dataframe = combined_position_dataframe[(combined_position_dataframe['frame'] >= 1150) & (combined_position_dataframe['frame'] <= 3550)]
+    position_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_position_dataframe)
+    position_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'position_absolute_error_dataframe.csv', index = False)
+    position_error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'position_rmse_dataframe.csv', index = False)
 
-    freemocap_dataframe['system'] = 'freemocap'
-    qualisys_dataframe['system'] = 'qualisys'
+    freemocap_velocity_dataframe = aligned_freemocap_velocity_data_dict['dataframe_of_extracted_3d_data']
+    qualisys_velocity_dataframe = qualisys_velocity_data_dict['dataframe_of_extracted_3d_data']
+    freemocap_velocity_dataframe['system'] = 'freemocap'
+    qualisys_velocity_dataframe['system'] = 'qualisys'
+    combined_velocity_dataframe = combine_3d_dataframes(dataframe_A=freemocap_velocity_dataframe, dataframe_B=qualisys_velocity_dataframe)
+    combined_velocity_dataframe = combined_velocity_dataframe[(combined_velocity_dataframe['frame'] >= 1150) & (combined_velocity_dataframe['frame'] <= 3550)]
+    velocity_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_velocity_dataframe)
+    velocity_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'velocity_absolute_error_dataframe.csv', index = False)
+    velocity_error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'velocity_rmse_dataframe.csv', index = False)
 
-    combined_dataframe = combine_3d_dataframes(dataframe_A=freemocap_dataframe, dataframe_B=qualisys_dataframe)
-
-
-    combined_dataframe = combined_dataframe[(combined_dataframe['frame'] >= 1150) & (combined_dataframe['frame'] <= 3550)]
-    error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_dataframe)
-
-    error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'absolute_error_dataframe.csv', index = False)
-    error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'rmse_dataframe.csv', index = False)
-
-    run_dash_app(dataframe_of_3d_data=combined_dataframe, rmse_dataframe=error_metrics_dict['rmse_dataframe'], absolute_error_dataframe=error_metrics_dict['absolute_error_dataframe'])
+    run_dash_app(dataframe_of_3d_data=combined_position_dataframe, rmse_dataframe=position_error_metrics_dict['rmse_dataframe'], absolute_error_dataframe=position_error_metrics_dict['absolute_error_dataframe'])
 
     f = 2 
 
