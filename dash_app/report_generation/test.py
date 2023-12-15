@@ -5,6 +5,8 @@ from plotly.subplots import make_subplots
 from dash_app.data_utils.extract_rmse_values import extract_overall_rmse_values_from_dataframe
 from dash_app.plotting.indicator_plot import create_indicator
 from dash_app.ui_components.dashboard import update_joint_marker_card
+from dash_app.plotting.rmse_joint_plot import create_rmse_joint_bar_plot
+from dash_app.report_generation.report_syles import styles
 
 
 def create_subplots_from_individual_figs(fig_x, fig_y, fig_z, color_of_cards):
@@ -19,29 +21,30 @@ def create_subplots_from_individual_figs(fig_x, fig_y, fig_z, color_of_cards):
     # Update figure layout
     fig.update_layout(height=700, showlegend=True, paper_bgcolor=color_of_cards)
     fig.update_xaxes(title_text="Frame", row=3, col=1)  # Only the last plot (Z) shows the Frame on x-axis
-    fig.update_yaxes(title_text="X Axis", row=1, col=1)
-    fig.update_yaxes(title_text="Y Axis", row=2, col=1)
-    fig.update_yaxes(title_text="Z Axis", row=3, col=1)
+    fig.update_yaxes(title_text="X Axis (mm)", row=1, col=1)
+    fig.update_yaxes(title_text="Y Axis (mm)", row=2, col=1)
+    fig.update_yaxes(title_text="Z Axis (mm)", row=3, col=1)
 
     return fig
 
 def create_indicators(rmse_values):
     return [
-        create_indicator(rmse_values['total'], "Total RMSE"),
-        create_indicator(rmse_values['x'], "X RMSE", color_of_text='red'),
-        create_indicator(rmse_values['y'], "Y RMSE", color_of_text='green'),
-        create_indicator(rmse_values['z'], "Z RMSE", color_of_text='blue'),
+        create_indicator(rmse_values['total'], "Total RMSE (mm)"),
+        create_indicator(rmse_values['x'], "X RMSE (mm)", color_of_text='red'),
+        create_indicator(rmse_values['y'], "Y RMSE (mm)", color_of_text='green'),
+        create_indicator(rmse_values['z'], "Z RMSE (mm)", color_of_text='blue'),
     ]
 
 def fig_to_html(fig):
     return pio.to_html(fig, full_html=False)
 
 def generate_rmse_table(rmse_values):
-    table_html = '<table>'
+    table_html = '<table style="margin-left:auto; margin-right:auto;">'  # Center the table
+
     # Add a title row
     table_html += """
     <tr>
-        <th colspan='2' style='text-align:center; padding:10px;'>Joint RMSE</th>
+        <th colspan='2' style='text-align:center; padding:10px;'>Joint RMSE (mm) </th>
     </tr>
     """
     # Add rows for each RMSE value with colored titles
@@ -55,79 +58,18 @@ def generate_html_report(dataframe_of_3d_data, rmse_dataframe, filename="traject
     unique_markers = dataframe_of_3d_data['marker'].unique()
 
     # Start of the HTML content with included CSS for styling
-    html_content = """
+    html_content = f"""
     <html>
     <head>
         <title>Trajectory Report</title>
-        <style>
-            .marker-section {
-                border-top: 2px solid #ccc;
-                padding-top: 20px;
-                margin-top: 20px;
-            }
-            h1 {
-                page-break-before: always; /* Ensures each marker starts on a new page when printed */
-            }
-            .navigation {
-                position: fixed;
-                top: 0;
-                left: 0;
-                background-color: #f8f8f8;
-                width: 100%;
-                text-align: left;
-                padding: 8px 0;
-                border-bottom: 1px solid #e7e7e7;
-                z-index: 1000;
-            }
-            .navigation a {
-                padding: 6px 12px;
-                text-decoration: none;
-                color: #007bff;
-            }
-            .navigation a:hover {
-                background-color: #e7e7e7;
-            }
-            .indicators-container {
-                display: flex;
-                flex-direction: row;
-                align-items: center; /* Center align items horizontally in the column */
-                justify-content: center; /* Center align items vertically in the column */
-                margin-bottom: 5px; /* Space at the bottom of the container */
-            }
-            .indicator-wrapper {
-                margin: 10px 0; /* Margin around each indicator for spacing */
-                width: 10%; /* Full width of the container */
-                height: 300px; 
-                overflow: hidden; /* Hide content that exceeds the div height */
-            }
-            table {
-                    border-collapse: collapse;
-                    width: 200px; /* Set the width of the table */
-                    background-color: #f8f8f8; /* Background color */
-                    border: 1px solid #ccc; /* Border color */
-                    margin-bottom: 10px; /* Space after the table */
-                }
-
-            td {
-                    padding: 5px; /* Padding inside each cell */
-                    text-align: left; /* Align text to the left */
-                }
-
-            tr:nth-child(even) {background-color: #f2f2f2;} /* Zebra striping for rows */
-
-            th {
-                background-color: #f8f8f8; /* Header background color */
-                border-bottom: 1px solid #ccc; /* Border color */
-                padding: 5px; /* Padding inside each cell */
-                text-align: left; /* Align text to the left */
-            }
-            }
-        </style>
+        {styles}
 
     </head>
     <body>
     <div class='navigation'>
     """
+
+
 
     # Add navigation links
     for marker in unique_markers:
@@ -150,8 +92,20 @@ def generate_html_report(dataframe_of_3d_data, rmse_dataframe, filename="traject
         indicator_html = fig_to_html(indicator)
         html_content += f"<div class='indicator-wrapper'>{indicator_html}</div>"
 
+
+
+    # rmse_joint_bar_plot_html = fig_to_html(rmse_joint_bar_plot)
+    # html_content += rmse_joint_bar_plot_html
+
     html_content += "</div>"
 
+
+    rmse_joint_bar_plot = create_rmse_joint_bar_plot(rmse_dataframe)
+
+    for error_dimension, rmse_plot in rmse_joint_bar_plot.items():
+        rmse_plot.update_layout(height=300)
+        rmse_dimension_html = fig_to_html(rmse_plot)
+        html_content += rmse_dimension_html
 
     for marker in unique_markers:
         # Add a heading for each marker with an anchor
@@ -169,6 +123,7 @@ def generate_html_report(dataframe_of_3d_data, rmse_dataframe, filename="traject
         html_content += rmse_table_html  # Add the table to the content
 
 
+        html_content += f"<center><h2> Position Comparison (mm) </h1></center>"
 
         fig_x, fig_y, fig_z = create_joint_trajectory_plots(marker, dataframe_of_3d_data, color_of_cards='white')
         figure = create_subplots_from_individual_figs(fig_x, fig_y, fig_z, color_of_cards='white')

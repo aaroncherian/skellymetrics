@@ -13,9 +13,9 @@ def create_rmse_joint_bar_plot(df):
             go.Bar(name=dim, x=filtered_df['marker'], y=filtered_df['RMSE'])
         ])
         fig.update_layout(
-            title=f'RMSE for each marker ({dim})',
+            title=f'RMSE per marker ({dim})',
             xaxis_title='Marker',
-            yaxis_title='RMSE Value',
+            yaxis_title='RMSE (mm)',
             xaxis=dict(
                 tickfont=dict(
                     size=18
