@@ -36,10 +36,17 @@ styles = """
             }
             .indicator-wrapper {
                 margin: 10px 0; /* Margin around each indicator for spacing */
-                width: 10%; /* Full width of the container */
-                height: 300px; 
+                width: 15%; /* Full width of the container */
+                height: 250px; 
                 overflow: hidden; /* Hide content that exceeds the div height */
             }
+            .rmse-tables-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-evenly;
+                align-items: center;
+            }
+
             table {
                     border-collapse: collapse;
                     width: 200px; /* Set the width of the table */
@@ -62,5 +69,7 @@ styles = """
                 text-align: left; /* Align text to the left */
             }
             }
+
+
         </style>
 """

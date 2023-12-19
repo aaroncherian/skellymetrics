@@ -1,8 +1,7 @@
 from dash_app.report_generation.report_syles import styles
-from dash_app.report_generation.html_report_utils import fig_to_html, generate_rmse_table, create_subplots_from_individual_figs, create_indicators
+from dash_app.report_generation.html_report_utils import fig_to_html, generate_position_rmse_table, generate_velocity_rmse_table, create_position_subplots_from_individual_figs, create_velocity_subplots_from_individual_figs, create_position_indicators, create_velocity_indicators
 
 from dash_app.data_utils.extract_rmse_values import extract_overall_rmse_values_from_dataframe
-from dash_app.plotting.indicator_plot import create_indicator
 from dash_app.ui_components.dashboard import update_joint_marker_card
 from dash_app.plotting.rmse_joint_plot import create_rmse_joint_bar_plot, create_position_velocity_rmse_joint_bar_plot
 from dash_app.plotting.joint_trajectory_plots import create_joint_trajectory_plots
@@ -16,10 +15,18 @@ def generate_navigation_links(unique_markers):
     navigation_html += "</div>"
     return navigation_html
 
-def generate_overall_rmse_indicators_html(rmse_dataframe):
+def generate_overall_rmse_indicators_html(rmse_dataframe, type: str):
     rmse_indicators_html = "<div class='indicators-container'>"
     rmse_values = extract_overall_rmse_values_from_dataframe(rmse_dataframe)
-    indicators = create_indicators(rmse_values)
+
+    if type == 'position':
+        indicators = create_position_indicators(rmse_values)
+
+    elif type == 'velocity':
+        indicators = create_velocity_indicators(rmse_values)
+
+    else:
+        raise ValueError(f"Invalid type: {type} - Should be 'position' or 'velocity'.")
     f = 2
     for indicator in indicators:
         indicator_html = fig_to_html(indicator)
@@ -55,20 +62,23 @@ def generate_marker_specific_html(marker, position_dataframe_of_3d_data, positio
         'z': update_joint_marker_card(marker, velocity_rmse_dataframe)[2]
     }
 
-    rmse_position_table_html = generate_rmse_table(marker_position_rmse_values)
-    marker_specific_html += rmse_position_table_html  # Add the table to the content
+    rmse_position_table_html = generate_position_rmse_table(marker_position_rmse_values)
+    rmse_velocity_table_html = generate_velocity_rmse_table(marker_velocity_rmse_values)
 
-    rmse_velocity_table_html = generate_rmse_table(marker_velocity_rmse_values)
-    marker_specific_html += rmse_velocity_table_html  # Add the table to the content
+
+    marker_specific_html += "<div class='rmse-tables-container'>"
+    marker_specific_html += rmse_position_table_html
+    marker_specific_html += rmse_velocity_table_html
+    marker_specific_html += "</div>"
 
     marker_specific_html += f"<center><h2> Position Comparison (mm) </h1></center>"
     fig_x, fig_y, fig_z = create_joint_trajectory_plots(marker, position_dataframe_of_3d_data, color_of_cards='white')
-    figure = create_subplots_from_individual_figs(fig_x, fig_y, fig_z, color_of_cards='white')
+    figure = create_position_subplots_from_individual_figs(fig_x, fig_y, fig_z, color_of_cards='white')
     marker_specific_html += fig_to_html(figure)
 
     marker_specific_html += f"<center><h2> Velocity Comparison (mm/frame) </h1></center>"
     fig_x_vel, fig_y_vel, fig_z_vel = create_joint_velocity_plots(marker, velocity_dataframe_of_3d_data, color_of_cards='white')
-    figure_vel = create_subplots_from_individual_figs(fig_x_vel, fig_y_vel, fig_z_vel, color_of_cards='white')
+    figure_vel = create_velocity_subplots_from_individual_figs(fig_x_vel, fig_y_vel, fig_z_vel, color_of_cards='white')
     # Convert figures to HTML and add to the report content
     marker_specific_html += fig_to_html(figure_vel)
 
@@ -85,7 +95,9 @@ def generate_html_report(position_dataframe_of_3d_data, position_rmse_dataframe,
     
     html_content += generate_navigation_links(unique_markers)
 
-    html_content += generate_overall_rmse_indicators_html(position_rmse_dataframe)
+    html_content += generate_overall_rmse_indicators_html(position_rmse_dataframe, type = 'position')
+
+    html_content += generate_overall_rmse_indicators_html(velocity_rmse_dataframe, type = 'velocity')
 
     html_content += generate_overall_joint_rmse_bar_plot(position_rmse_dataframe, velocity_rmse_dataframe)
 
