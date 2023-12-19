@@ -30,10 +30,10 @@ def run_dash_app(position_data_and_error:MoCapData, velocity_data_and_error:MoCa
     app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
     register_selected_marker_callback(app) #register a callback to find the selected marker and stored it
     register_marker_name_callbacks(app) #register a callback to update the marker name wherever it is listed in the app
-    register_info_card_callback(app, position_data_and_error.rmse_dataframe)
+    register_info_card_callback(app, position_data_and_error.rmse_dataframe, velocity_data_and_error.rmse_dataframe)
     register_plot_update_callback(app, position_data_and_error, velocity_data_and_error, COLOR_OF_CARDS)
     register_marker_button_color_callback(app)
-    register_report_download_callback(app, position_data_and_error.absolute_error_dataframe, position_data_and_error.rmse_dataframe)
+    register_report_download_callback(app, position_data_and_error.joint_dataframe, position_data_and_error.rmse_dataframe, velocity_data_and_error.joint_dataframe ,velocity_data_and_error.rmse_dataframe)
 
     load_figure_template('LUX')
 

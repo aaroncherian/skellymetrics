@@ -160,46 +160,8 @@ if __name__ == '__main__':
     # from markers.qualisys_markers import qualisys_markers
 
     #prosthetic data
-    # path_to_recording_folder = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1")
-    # qualisys_markers = [
-    #     'right_hip',
-    #     'left_hip',
-    #     'right_knee',
-    #     'left_knee',
-    #     'right_ankle',
-    #     'left_ankle',
-    #     'right_heel',
-    #     'left_heel',
-    #     'right_foot_index',
-    #     'left_foot_index',
-    # ]
-
-    # markers_to_extract = [
-    #     'right_hip',
-    #     'left_hip',
-    #     'right_knee',
-    #     'left_knee',
-    #     'right_ankle',
-    #     'left_ankle',
-    #     'right_heel',
-    #     'left_heel',
-    #     'right_foot_index',
-    #     'left_foot_index',
-    # ]
-
-    #full body treadmill data
-    path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
-    from markers.markers_to_extract import markers_to_extract
+    path_to_recording_folder = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1")
     qualisys_markers = [
-        'head',
-        'right_shoulder',
-        'left_shoulder',
-        'right_elbow',
-        'left_elbow',
-        'right_wrist',
-        'left_wrist',
-        'right_hand',
-        'left_hand',
         'right_hip',
         'left_hip',
         'right_knee',
@@ -211,6 +173,44 @@ if __name__ == '__main__':
         'right_foot_index',
         'left_foot_index',
     ]
+
+    markers_to_extract = [
+        'right_hip',
+        'left_hip',
+        'right_knee',
+        'left_knee',
+        'right_ankle',
+        'left_ankle',
+        'right_heel',
+        'left_heel',
+        'right_foot_index',
+        'left_foot_index',
+    ]
+
+    #full body treadmill data
+    # path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
+    # from markers.markers_to_extract import markers_to_extract
+    # qualisys_markers = [
+    #     'head',
+    #     'right_shoulder',
+    #     'left_shoulder',
+    #     'right_elbow',
+    #     'left_elbow',
+    #     'right_wrist',
+    #     'left_wrist',
+    #     'right_hand',
+    #     'left_hand',
+    #     'right_hip',
+    #     'left_hip',
+    #     'right_knee',
+    #     'left_knee',
+    #     'right_ankle',
+    #     'left_ankle',
+    #     'right_heel',
+    #     'left_heel',
+    #     'right_foot_index',
+    #     'left_foot_index',
+    # ]
         
 
 

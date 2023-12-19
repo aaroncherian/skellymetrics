@@ -73,10 +73,10 @@ def register_marker_name_callbacks(app: Dash):
         return stored_data['marker'] if stored_data else None
 
     @app.callback(
-        Output('selected-marker-info-card', 'children'),
+        Output('selected-marker-info-postion-card', 'children'),
         [Input('store-selected-marker', 'data')]
     )
-    def update_info_marker(stored_data):
+    def update_info_position_marker(stored_data):
         """
         Update the displayed selected marker name in the info card.
 
@@ -87,3 +87,20 @@ def register_marker_name_callbacks(app: Dash):
             str: The name of the selected marker.
         """
         return stored_data['marker'] if stored_data else None
+    
+    @app.callback(
+        Output('selected-marker-info-velocity-card', 'children'),
+        [Input('store-selected-marker', 'data')]
+    )
+    def update_info_velocity_marker(stored_data):
+        """
+        Update the displayed selected marker name in the info card.
+
+        Args:
+            stored_data (dict): Data stored in Dash dcc.Store component, containing the selected marker.
+
+        Returns:
+            str: The name of the selected marker.
+        """
+        return stored_data['marker'] if stored_data else None
+    
