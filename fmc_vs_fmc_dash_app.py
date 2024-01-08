@@ -14,6 +14,9 @@ from error_calculations.get_error_metrics import get_error_metrics
 
 from dash_app.run_dash_app import run_dash_app
 
+from models.mocap_data_model import MoCapData
+
+
 
 def main(original_freemocap_data_path,filtered_freemocap_data_path,representative_frame, create_scatter_plot = False):
     original_freemocap_databuilder = DataBuilder(path_to_data=original_freemocap_data_path, marker_list=mediapipe_markers)
@@ -53,7 +56,21 @@ def main(original_freemocap_data_path,filtered_freemocap_data_path,representativ
     combined_dataframe = combine_3d_dataframes(dataframe_A=original_freemocap_dataframe, dataframe_B=aligned_filtered_freemocap_dataframe)
     error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_dataframe)
 
-    run_dash_app(dataframe_of_3d_data=combined_dataframe, rmse_dataframe=error_metrics_dict['rmse_dataframe'], absolute_error_dataframe=error_metrics_dict['absolute_error_dataframe'])
+    position_data = MoCapData(
+        joint_dataframe=combined_dataframe,
+        rmse_dataframe=error_metrics_dict['rmse_dataframe'],
+        absolute_error_dataframe=error_metrics_dict['absolute_error_dataframe']
+    )
+
+    velocity_data = MoCapData(
+        joint_dataframe=combined_dataframe,
+        rmse_dataframe=error_metrics_dict['rmse_dataframe'],
+        absolute_error_dataframe=error_metrics_dict['absolute_error_dataframe']
+    )
+
+
+    run_dash_app(position_data_and_error=position_data, velocity_data_and_error=velocity_data)
+    # run_dash_app(dataframe_of_3d_data=combined_dataframe, rmse_dataframe=error_metrics_dict['rmse_dataframe'], absolute_error_dataframe=error_metrics_dict['absolute_error_dataframe'])
 
     f = 2 
 
@@ -64,8 +81,8 @@ if __name__ == '__main__':
     from pathlib import Path
     import numpy as np
 
-    original_freemocap_data_path = Path(r"D:\2023-07-26_SBT002\1.0_recordings\calib_1\sesh_2023-07-26_14_40_40_STB002_NIH_Trial2\output_data\mediapipe_body_3d_xyz.npy")
-    filtered_freemocap_data_path = Path(r"D:\2023-07-26_SBT002\1.0_recordings\calib_1\reprojection_filtered\sesh_2023-07-26_14_40_40_STB002_NIH_Trial2\output_data\mediapipe_body_3d_xyz.npy")
+    original_freemocap_data_path = Path(r'D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_50_56_TF01_leg_length_pos_25_trial_1\mediapipe_dlc_output_data\mediapipe_body_3d_xyz.npy')
+    filtered_freemocap_data_path = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_50_56_TF01_leg_length_pos_25_trial_1\output_data\mediapipe_body_3d_xyz.npy")
     # freemocap_output_folder_path = Path(r"D:\2023-07-26_SBT002\1.0_recordings\calib_1\reprojection_filtered\sesh_2023-07-26_14_40_40_STB002_NIH_Trial2\output_data")
 
     main(original_freemocap_data_path=original_freemocap_data_path,filtered_freemocap_data_path=filtered_freemocap_data_path,representative_frame=1425)
