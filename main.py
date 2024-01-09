@@ -99,7 +99,7 @@ def combine_and_filter_dataframes(freemocap_dataframe, qualisys_dataframe):
     return combined_dataframe
 
 
-def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,representative_frame, qualisys_marker_list, markers_to_extract, create_scatter_plot = False):
+def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,representative_frame, qualisys_marker_list, markers_to_extract, create_scatter_plot = False, save_transformation_matrix = False, transformation_matrix_to_use = None):
     
     #create a dictionary of the original data, extracted data, and dataframes for the position data for both systems
     freemocap_position_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=markers_to_extract, path_to_data=freemocap_data_path)
@@ -110,8 +110,15 @@ def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,represe
     qualisys_velocity_dict = get_data_arrays_and_dataframes(marker_list=qualisys_marker_list, markers_to_extract=markers_to_extract, data_array=qualisys_velocity_array)
 
     #align the freemocap data to the qualisys data
-    transformation_matrix = align_freemocap_and_qualisys_data(freemocap_position_dict['extracted_data_3d_array'],qualisys_position_dict['extracted_data_3d_array'],representative_frame)
-    aligned_freemocap_position_data = apply_transformation(transformation_matrix=transformation_matrix, data_to_transform=freemocap_position_dict['original_data_3d_array'])
+    if transformation_matrix_to_use is None:
+        transformation_matrix = align_freemocap_and_qualisys_data(freemocap_position_dict['extracted_data_3d_array'],qualisys_position_dict['extracted_data_3d_array'],representative_frame)
+        aligned_freemocap_position_data = apply_transformation(transformation_matrix=transformation_matrix, data_to_transform=freemocap_position_dict['original_data_3d_array'])
+    else:
+        aligned_freemocap_position_data = apply_transformation(transformation_matrix=transformation_matrix_to_use, data_to_transform=freemocap_position_dict['original_data_3d_array'])
+
+    #save the transformation matrix if desired
+    if save_transformation_matrix:
+        np.save(path_to_recording_folder/'transformation_matrix.npy', transformation_matrix)
 
     #create a dictionary of the original data, extracted data, and dataframes for the velocity data for newly aligned freemocap data
     aligned_freemocap_position_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=markers_to_extract, data_array=aligned_freemocap_position_data)
@@ -187,7 +194,7 @@ if __name__ == '__main__':
         'left_foot_index',
     ]
 
-    #full body treadmill data
+    # full body treadmill data
     # path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
     # from markers.markers_to_extract import markers_to_extract
     # qualisys_markers = [
@@ -215,16 +222,16 @@ if __name__ == '__main__':
 
 
 
-    freemocap_data_path = path_to_recording_folder/'output_data'/'mediapipe_body_3d_xyz.npy'
+    freemocap_data_path = path_to_recording_folder/'mediapipe_yolo_ref_dlc_output_data'/'mediapipe_body_3d_xyz.npy'
     qualisys_data_path = path_to_recording_folder/'qualisys'/'qualisys_joint_centers_3d_xyz.npy'
-    freemocap_output_folder_path = path_to_recording_folder/'output_data'
+    # freemocap_output_folder_path = path_to_recording_folder/'mediapipe_output_data'
 
     # qualisys_data_path = r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\qualisys\qualisys_joint_centers_3d_xyz.npy"
     # freemocap_data_path = r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\qualisys\qualisys_joint_centers_3d_xyz.npy"
-    # freemocap_output_folder_path = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\output_data")
+    # # freemocap_output_folder_path = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\output_data")
 
-    freemocap_data = np.load(freemocap_data_path)
-    qualisys_data = np.load(qualisys_data_path)
+    # freemocap_data = np.load(freemocap_data_path)
+    # qualisys_data = np.load(qualisys_data_path)
+    saved_transformation_matrix = np.load(path_to_recording_folder/'transformation_matrix.npy')
 
-
-    freemocap_data_transformed = main(path_to_recording_folder=path_to_recording_folder, freemocap_data_path=freemocap_data_path, qualisys_data_path=qualisys_data_path, representative_frame=800, qualisys_marker_list=qualisys_markers, markers_to_extract=markers_to_extract, create_scatter_plot=False)
+    freemocap_data_transformed = main(path_to_recording_folder=path_to_recording_folder, freemocap_data_path=freemocap_data_path, qualisys_data_path=qualisys_data_path, representative_frame=221, qualisys_marker_list=qualisys_markers, markers_to_extract=markers_to_extract, create_scatter_plot=False, save_transformation_matrix=False, transformation_matrix_to_use=None)
