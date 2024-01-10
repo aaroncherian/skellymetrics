@@ -13,7 +13,7 @@ def load_data_from_path(path_to_data_folder):
 
 
 path_to_session = Path(r'D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1')
-path_to_session = path_to_session
+# path_to_session = path_to_session/'post_processed_rotated_data'
 
 # #to check raw data
 # path_to_mediapipe_dlc = path_to_session / 'dlc_non_rotated'/'raw_data'
@@ -21,7 +21,7 @@ path_to_session = path_to_session
 
 
 path_to_mediapipe_dlc = path_to_session / 'mediapipe_dlc_output_data'
-path_to_mediapipe_yolo_dlc = path_to_session / 'mediapipe_output_data'
+path_to_mediapipe_yolo_dlc = path_to_session / 'mediapipe_yolo_dlc_output_data'
 path_to_mediapipe_yolo_ref_dlc = path_to_session / 'mediapipe_yolo_ref_dlc_output_data'
 
 
@@ -38,7 +38,7 @@ hip_index = mediapipe_markers.index('right_hip')
 knee_index = mediapipe_markers.index('right_knee')
 ankle_index = mediapipe_markers.index('right_ankle')
 
-index_list = [23]
+index_list = [knee_index]
 
 
 plt.figure()
