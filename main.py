@@ -167,71 +167,29 @@ if __name__ == '__main__':
     # from markers.qualisys_markers import qualisys_markers
 
     #prosthetic data
-    path_to_recording_folder = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1")
-    qualisys_markers = [
-        'right_hip',
-        'left_hip',
-        'right_knee',
-        'left_knee',
-        'right_ankle',
-        'left_ankle',
-        'right_heel',
-        'left_heel',
-        'right_foot_index',
-        'left_foot_index',
-    ]
+    # from marker_sets.prosthetic_study_marker_set import qualisys_markers, markers_to_extract
+    # path_to_recording_folder = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1")
+    # freemocap_data_path = path_to_recording_folder/'mediapipe_output_data'/'mediapipe_body_3d_xyz.npy'
 
-    markers_to_extract = [
-        'right_hip',
-        'left_hip',
-        'right_knee',
-        'left_knee',
-        'right_ankle',
-        'left_ankle',
-        'right_heel',
-        'left_heel',
-        'right_foot_index',
-        'left_foot_index',
-    ]
 
     # full body treadmill data
-    # path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
-    # from markers.markers_to_extract import markers_to_extract
-    # qualisys_markers = [
-    #     'head',
-    #     'right_shoulder',
-    #     'left_shoulder',
-    #     'right_elbow',
-    #     'left_elbow',
-    #     'right_wrist',
-    #     'left_wrist',
-    #     'right_hand',
-    #     'left_hand',
-    #     'right_hip',
-    #     'left_hip',
-    #     'right_knee',
-    #     'left_knee',
-    #     'right_ankle',
-    #     'left_ankle',
-    #     'right_heel',
-    #     'left_heel',
-    #     'right_foot_index',
-    #     'left_foot_index',
-    # ]
-        
-
-
+    from marker_sets.MDN_validation_marker_set import qualisys_markers, markers_to_extract
+    path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
+ 
 
     freemocap_data_path = path_to_recording_folder/'mediapipe_output_data'/'mediapipe_body_3d_xyz.npy'
     qualisys_data_path = path_to_recording_folder/'qualisys'/'qualisys_joint_centers_3d_xyz.npy'
-    # freemocap_output_folder_path = path_to_recording_folder/'mediapipe_output_data'
 
-    # qualisys_data_path = r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\qualisys\qualisys_joint_centers_3d_xyz.npy"
-    # freemocap_data_path = r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\qualisys\qualisys_joint_centers_3d_xyz.npy"
-    # # freemocap_output_folder_path = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1\output_data")
+    
+  
+    # saved_transformation_matrix = np.load(path_to_recording_folder/'transformation_matrix.npy')
 
-    # freemocap_data = np.load(freemocap_data_path)
-    # qualisys_data = np.load(qualisys_data_path)
-    saved_transformation_matrix = np.load(path_to_recording_folder/'transformation_matrix.npy')
-
-    freemocap_data_transformed = main(path_to_recording_folder=path_to_recording_folder, freemocap_data_path=freemocap_data_path, qualisys_data_path=qualisys_data_path, representative_frame=221, qualisys_marker_list=qualisys_markers, markers_to_extract=markers_to_extract, create_scatter_plot=False, save_transformation_matrix=False, transformation_matrix_to_use=saved_transformation_matrix)
+    freemocap_data_transformed = main(path_to_recording_folder=path_to_recording_folder, 
+                                      freemocap_data_path=freemocap_data_path, 
+                                      qualisys_data_path=qualisys_data_path, 
+                                      representative_frame=500, 
+                                      qualisys_marker_list=qualisys_markers,
+                                        markers_to_extract=markers_to_extract, 
+                                        create_scatter_plot=False, 
+                                        save_transformation_matrix=False, 
+                                        transformation_matrix_to_use=None)
