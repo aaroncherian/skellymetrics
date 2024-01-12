@@ -117,7 +117,8 @@ class ErrorMetricsBuilder:
         return np.sqrt(value)
     
     def _calculate_rmse_from_squared_error(self,squared_errors):
-        mean_squared_error = np.nanmean(squared_errors, axis = 0)
+        
+        mean_squared_error = np.mean(squared_errors, axis = 0)
         root_mean_squared_error = np.sqrt(mean_squared_error)
         return root_mean_squared_error
     
@@ -130,9 +131,7 @@ class ErrorMetricsBuilder:
 
     
 
-    
 
-    
 
 
     
