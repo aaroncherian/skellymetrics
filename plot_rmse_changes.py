@@ -125,8 +125,13 @@ qualisys_data = pd.read_csv(session_path/'metrics'/'qualisys_position_data.csv')
 
 position_dataframe = pd.concat([baseline_data, experimental_data,qualisys_data], ignore_index=True)
 
+baseline_dataframe = load_position_rmse_dataframe(baseline_session_path)
+experimental_dataframe = load_position_rmse_dataframe(experimental_session_path)
 
-run_dash_app(position_dataframe)
+rmse_change_dataframe = calculate_change_in_rmses(baseline_dataframe, experimental_dataframe)
+
+
+run_dash_app(position_dataframe, rmse_change_dataframe)
 # fig = create_3d_scatter_from_dataframe(baseline_session, experimental_session, position_dataframe)
 
 # fig.show()

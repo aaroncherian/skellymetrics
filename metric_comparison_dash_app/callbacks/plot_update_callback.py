@@ -1,5 +1,5 @@
 from dash import Output, Input, Dash, State, ALL
-from dash_app.plotting.joint_trajectory_plots import create_dash_trajectory_plots
+from metric_comparison_dash_app.plotting.joint_trajectory_plots import create_dash_trajectory_plots
 
 from models.mocap_data_model import MoCapData
 

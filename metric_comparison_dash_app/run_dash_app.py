@@ -25,7 +25,7 @@ FRAME_SKIP_INTERVAL = 5
 
 
 
-def run_dash_app(position_dataframe):
+def run_dash_app(position_dataframe, rmse_change_dataframe):
     # Initialize Dash App
     app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
     register_selected_marker_callback(app) #register a callback to find the selected marker and stored it
@@ -38,8 +38,8 @@ def run_dash_app(position_dataframe):
     load_figure_template('LUX')
 
     # Create Figures and Components
-    scatter_3d_figure, marker_buttons_list = prepare_dashboard_elements(
-        position_dataframe, FRAME_SKIP_INTERVAL, COLOR_OF_CARDS)
+    scatter_3d_figure, rmse_change_plot, marker_buttons_list = prepare_dashboard_elements(
+        position_dataframe, rmse_change_dataframe, FRAME_SKIP_INTERVAL, COLOR_OF_CARDS)
 
     # app.layout = get_layout(marker_figure=scatter_3d_figure,
     #                         joint_rmse_figure=joint_rmse_plot,
@@ -48,7 +48,7 @@ def run_dash_app(position_dataframe):
     #                         color_of_cards=COLOR_OF_CARDS)
     
     
-    app.layout = get_layout(marker_figure=scatter_3d_figure,
+    app.layout = get_layout(marker_figure=scatter_3d_figure, rmse_change_figure=rmse_change_plot, 
                             list_of_marker_buttons=marker_buttons_list,
                             color_of_cards=COLOR_OF_CARDS)
 

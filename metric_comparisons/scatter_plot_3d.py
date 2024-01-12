@@ -10,7 +10,7 @@ def create_3d_scatter_from_dataframe(dataframe_of_3d_data, ax_range=1200):
     system_names = dataframe_of_3d_data['system'].unique()
 
     # Create a color map for the systems (modify this as needed)
-    colors = ['blue', 'green', 'red', 'purple', 'orange', 'yellow']
+    colors = ['#0b84a5', '#f4bc3d', 'red', 'purple', 'orange', 'yellow']
     color_discrete_map = {system: color for system, color in zip(system_names, colors)}
 
     # Create the 3D scatter plot

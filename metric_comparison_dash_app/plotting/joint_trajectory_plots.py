@@ -13,10 +13,14 @@ def create_joint_trajectory_plots(marker, dataframe_of_3d_data, color_of_cards):
     df_marker = dataframe_of_3d_data[dataframe_of_3d_data.marker == marker]
     
     trajectory_plot_height = 350
+    system_names = dataframe_of_3d_data['system'].unique()
+    colors = ['#0b84a5', '#f4bc3d', 'black', 'purple', 'orange', 'yellow']
+    color_discrete_map = {system: color for system, color in zip(system_names, colors)}
+
     # Your plotting code here. For demonstration, using placeholders.
-    fig_x = px.line(df_marker, x='frame', y='x', color='system', color_discrete_map={'freemocap': 'blue', 'qualisys': 'red'}, render_mode='svg')
-    fig_y = px.line(df_marker, x='frame', y='y', color='system', color_discrete_map={'freemocap': 'blue', 'qualisys': 'red'}, render_mode='svg')
-    fig_z = px.line(df_marker, x='frame', y='z', color='system', color_discrete_map={'freemocap': 'blue', 'qualisys': 'red'}, render_mode='svg')
+    fig_x = px.line(df_marker, x='frame', y='x', color='system', color_discrete_map=color_discrete_map, render_mode='svg')
+    fig_y = px.line(df_marker, x='frame', y='y', color='system', color_discrete_map=color_discrete_map, render_mode='svg')
+    fig_z = px.line(df_marker, x='frame', y='z', color='system', color_discrete_map=color_discrete_map, render_mode='svg')
 
     fig_x.update_xaxes(title_text='', showticklabels=False)
     fig_x.update_yaxes(title_text='X Position (mm)', title_font=dict(size=18))
