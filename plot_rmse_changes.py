@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
+from metric_comparison_dash_app.run_dash_app import run_dash_app
 
 def create_3d_scatter_from_dataframe(baseline_system_name, experimental_system_name, dataframe_of_3d_data, ax_range=1200):
     x_mean = dataframe_of_3d_data["x"].mean()
@@ -124,9 +125,11 @@ qualisys_data = pd.read_csv(session_path/'metrics'/'qualisys_position_data.csv')
 
 position_dataframe = pd.concat([baseline_data, experimental_data,qualisys_data], ignore_index=True)
 
-fig = create_3d_scatter_from_dataframe(baseline_session, experimental_session, position_dataframe)
 
-fig.show()
+run_dash_app(position_dataframe)
+# fig = create_3d_scatter_from_dataframe(baseline_session, experimental_session, position_dataframe)
+
+# fig.show()
 
 f=2
 

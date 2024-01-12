@@ -4,19 +4,19 @@ from dash import Dash
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
 
-from dash_app.data_utils.load_data import combine_freemocap_and_qualisys_into_dataframe
-from dash_app.data_utils.file_manager import FileManager
+from metric_comparison_dash_app.data_utils.load_data import combine_freemocap_and_qualisys_into_dataframe
+from metric_comparison_dash_app.data_utils.file_manager import FileManager
 
-from dash_app.ui_components.dashboard import prepare_dashboard_elements
+from metric_comparison_dash_app.ui_components.dashboard import prepare_dashboard_elements
 
-from dash_app.layout.main_layout import get_layout
+from metric_comparison_dash_app.layout.main_layout import get_layout
 
-from dash_app.callbacks.marker_name_callbacks import register_marker_name_callbacks
-from dash_app.callbacks.selected_marker_callback import register_selected_marker_callback
-from dash_app.callbacks.info_card_callback import register_info_card_callback
-from dash_app.callbacks.plot_update_callback import register_plot_update_callback
-from dash_app.callbacks.marker_button_color_callback import register_marker_button_color_callback
-from dash_app.callbacks.report_download_callback import register_report_download_callback
+from metric_comparison_dash_app.callbacks.marker_name_callbacks import register_marker_name_callbacks
+from metric_comparison_dash_app.callbacks.selected_marker_callback import register_selected_marker_callback
+from metric_comparison_dash_app.callbacks.info_card_callback import register_info_card_callback
+from metric_comparison_dash_app.callbacks.plot_update_callback import register_plot_update_callback
+from metric_comparison_dash_app.callbacks.marker_button_color_callback import register_marker_button_color_callback
+from metric_comparison_dash_app.callbacks.report_download_callback import register_report_download_callback
 
 from models.mocap_data_model import MoCapData
 
@@ -25,26 +25,31 @@ FRAME_SKIP_INTERVAL = 5
 
 
 
-def run_dash_app(position_data_and_error:MoCapData, velocity_data_and_error:MoCapData):
+def run_dash_app(position_dataframe):
     # Initialize Dash App
     app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
     register_selected_marker_callback(app) #register a callback to find the selected marker and stored it
     register_marker_name_callbacks(app) #register a callback to update the marker name wherever it is listed in the app
-    register_info_card_callback(app, position_data_and_error.rmse_dataframe, velocity_data_and_error.rmse_dataframe)
-    register_plot_update_callback(app, position_data_and_error, velocity_data_and_error, COLOR_OF_CARDS)
+    # register_info_card_callback(app, position_data_and_error.rmse_dataframe, velocity_data_and_error.rmse_dataframe)
+    register_plot_update_callback(app, position_dataframe, COLOR_OF_CARDS)
     register_marker_button_color_callback(app)
-    register_report_download_callback(app, position_data_and_error.joint_dataframe, position_data_and_error.rmse_dataframe, velocity_data_and_error.joint_dataframe ,velocity_data_and_error.rmse_dataframe)
+    # register_report_download_callback(app, position_data_and_error.joint_dataframe, position_data_and_error.rmse_dataframe, velocity_data_and_error.joint_dataframe ,velocity_data_and_error.rmse_dataframe)
 
     load_figure_template('LUX')
 
     # Create Figures and Components
-    scatter_3d_figure, indicators, marker_buttons_list, joint_rmse_plot = prepare_dashboard_elements(
-        position_data_and_error, velocity_data_and_error, FRAME_SKIP_INTERVAL, COLOR_OF_CARDS)
+    scatter_3d_figure, marker_buttons_list = prepare_dashboard_elements(
+        position_dataframe, FRAME_SKIP_INTERVAL, COLOR_OF_CARDS)
 
+    # app.layout = get_layout(marker_figure=scatter_3d_figure,
+    #                         joint_rmse_figure=joint_rmse_plot,
+    #                         list_of_marker_buttons=marker_buttons_list,
+    #                         indicators=indicators,
+    #                         color_of_cards=COLOR_OF_CARDS)
+    
+    
     app.layout = get_layout(marker_figure=scatter_3d_figure,
-                            joint_rmse_figure=joint_rmse_plot,
                             list_of_marker_buttons=marker_buttons_list,
-                            indicators=indicators,
                             color_of_cards=COLOR_OF_CARDS)
 
     app.run_server(debug=False)

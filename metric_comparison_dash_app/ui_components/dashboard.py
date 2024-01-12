@@ -10,15 +10,14 @@ from models.mocap_data_model import MoCapData
 
 #this page handles updating of anything that appears on the dashboard 
 
-def prepare_dashboard_elements(position_data_and_error:MoCapData, velocity_data_and_error:MoCapData, frame_skip_interval, color_of_cards):
+def prepare_dashboard_elements(position_dataframe, frame_skip_interval, color_of_cards):
     """Prepare the figures and components for the Dash app layout."""
-    scatter_3d_figure = create_3d_figure_from_subsampled_data(position_data_and_error.joint_dataframe, frame_skip_interval, color_of_cards)
-    indicators = create_indicators_ui(position_data_and_error.rmse_dataframe)
-    marker_buttons_list = create_marker_buttons(position_data_and_error.joint_dataframe)
-    joint_rmse_plot = create_position_velocity_rmse_joint_bar_plot(position_data_and_error.rmse_dataframe, velocity_data_and_error.rmse_dataframe)
+    scatter_3d_figure = create_3d_figure_from_subsampled_data(dataframe_of_3d_data=position_dataframe, frame_skip_interval=frame_skip_interval, color_of_cards=color_of_cards)
+    # indicators = create_indicators_ui(position_data_and_error.rmse_dataframe)
+    marker_buttons_list = create_marker_buttons(position_dataframe)
+    # joint_rmse_plot = create_position_velocity_rmse_joint_bar_plot(position_data_and_error.rmse_dataframe, velocity_data_and_error.rmse_dataframe)
 
-    return scatter_3d_figure, indicators, marker_buttons_list, joint_rmse_plot
-
+    return scatter_3d_figure,marker_buttons_list
 
 def update_joint_marker_card(selected_marker, rmse_dataframe):
     rmses_for_this_marker = rmse_dataframe[rmse_dataframe.marker == selected_marker][['coordinate','RMSE']]
