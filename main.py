@@ -131,7 +131,7 @@ def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,represe
         plot_3d_scatter(freemocap_data=aligned_freemocap_position_data, qualisys_data=qualisys_position_dict['original_data_3d_array'])
 
     combined_position_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_position_dict['dataframe_of_extracted_3d_data'])
-    # combined_position_dataframe = combined_position_dataframe[(combined_position_dataframe['frame'] >= 700)]
+    combined_position_dataframe = combined_position_dataframe[(combined_position_dataframe['frame'] >= 700)]
     position_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_position_dataframe)
     position_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'position_absolute_error_dataframe.csv', index = False)
     position_error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'position_rmse_dataframe.csv', index = False)
@@ -171,29 +171,29 @@ if __name__ == '__main__':
     # from markers.qualisys_markers import qualisys_markers
 
     #prosthetic data
-    from marker_sets.prosthetic_study_marker_set import qualisys_markers, markers_to_extract
-    path_to_recording_folder = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1")
-    freemocap_data_path = path_to_recording_folder/'mediapipe_output_data'/'mediapipe_body_3d_xyz.npy'
+    # from marker_sets.prosthetic_study_marker_set import qualisys_markers, markers_to_extract
+    # path_to_recording_folder = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1")
+    # freemocap_data_path = path_to_recording_folder/'mediapipe_output_data'/'mediapipe_body_3d_xyz.npy'
 
 
     # # full body treadmill data
-    # from marker_sets.MDN_validation_marker_set import qualisys_markers, markers_to_extract
-    # path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
+    from marker_sets.MDN_validation_marker_set import qualisys_markers, markers_to_extract
+    path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
  
 
-    freemocap_data_path = path_to_recording_folder/'mediapipe_dlc_output_data'/'mediapipe_body_3d_xyz.npy'
+    freemocap_data_path = path_to_recording_folder/'output_data'/'mediapipe_body_3d_xyz.npy'
     qualisys_data_path = path_to_recording_folder/'qualisys'/'qualisys_joint_centers_3d_xyz.npy'
 
     
   
-    saved_transformation_matrix = np.load(path_to_recording_folder/'transformation_matrix.npy')
-    # saved_transformation_matrix = None
+    # saved_transformation_matrix = np.load(path_to_recording_folder/'transformation_matrix.npy')
+    saved_transformation_matrix = None
     
 
     freemocap_data_transformed = main(path_to_recording_folder=path_to_recording_folder, 
                                       freemocap_data_path=freemocap_data_path, 
                                       qualisys_data_path=qualisys_data_path, 
-                                      representative_frame=221, 
+                                      representative_frame=500, 
                                       qualisys_marker_list=qualisys_markers,
                                         markers_to_extract=markers_to_extract, 
                                         create_scatter_plot=False, 
