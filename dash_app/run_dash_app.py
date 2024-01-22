@@ -25,7 +25,7 @@ FRAME_SKIP_INTERVAL = 5
 
 
 
-def run_dash_app(position_data_and_error:MoCapData, velocity_data_and_error:MoCapData):
+def run_dash_app(position_data_and_error:MoCapData, velocity_data_and_error:MoCapData, recording_name = None):
     # Initialize Dash App
     app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
     register_selected_marker_callback(app) #register a callback to find the selected marker and stored it
@@ -33,7 +33,7 @@ def run_dash_app(position_data_and_error:MoCapData, velocity_data_and_error:MoCa
     register_info_card_callback(app, position_data_and_error.rmse_dataframe, velocity_data_and_error.rmse_dataframe)
     register_plot_update_callback(app, position_data_and_error, velocity_data_and_error, COLOR_OF_CARDS)
     register_marker_button_color_callback(app)
-    register_report_download_callback(app, position_data_and_error.joint_dataframe, position_data_and_error.rmse_dataframe, velocity_data_and_error.joint_dataframe ,velocity_data_and_error.rmse_dataframe)
+    register_report_download_callback(app, position_data_and_error.joint_dataframe, position_data_and_error.rmse_dataframe, velocity_data_and_error.joint_dataframe ,velocity_data_and_error.rmse_dataframe, recording_name=recording_name)
 
     load_figure_template('LUX')
 
@@ -41,7 +41,7 @@ def run_dash_app(position_data_and_error:MoCapData, velocity_data_and_error:MoCa
     scatter_3d_figure, indicators, marker_buttons_list, joint_rmse_plot = prepare_dashboard_elements(
         position_data_and_error, velocity_data_and_error, FRAME_SKIP_INTERVAL, COLOR_OF_CARDS)
 
-    app.layout = get_layout(marker_figure=scatter_3d_figure,
+    app.layout = get_layout(recording_name=recording_name, marker_figure=scatter_3d_figure,
                             joint_rmse_figure=joint_rmse_plot,
                             list_of_marker_buttons=marker_buttons_list,
                             indicators=indicators,

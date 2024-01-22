@@ -87,12 +87,20 @@ def generate_marker_specific_html(marker, position_dataframe_of_3d_data, positio
     return marker_specific_html
 
 
-def generate_html_report(position_dataframe_of_3d_data, position_rmse_dataframe, velocity_dataframe_of_3d_data, velocity_rmse_dataframe, filename="trajectory_report.html"):
+def generate_html_report(position_dataframe_of_3d_data, position_rmse_dataframe, velocity_dataframe_of_3d_data, velocity_rmse_dataframe, recording_name = None):
     unique_markers = position_dataframe_of_3d_data['marker'].unique()
 
     # Start of the HTML content with included CSS for styling
-    html_content = f"<html><head><title>Trajectory Report</title>{styles}</head><body>"
+    if recording_name is not None:
+        html_content = f"<html><head><title>{recording_name} Error Metrics </title>{styles}</head><body>"
+        report_title = f"{recording_name}"
+
+    else:
+        html_content = f"<html><head><title>Error Metrics</title>{styles}</head><body>"
+        report_title = f"Error Metrics Report"
     
+    html_content += f"<h1 style='text-align: center; margin-top: 50px;'>{report_title}</h1>"
+
     html_content += generate_navigation_links(unique_markers)
 
     html_content += generate_overall_rmse_indicators_html(position_rmse_dataframe, type = 'position')
@@ -107,7 +115,3 @@ def generate_html_report(position_dataframe_of_3d_data, position_rmse_dataframe,
     html_content += "</body></html>"
 
     return html_content
-
-    # with open(filename, "w", encoding='utf-8') as file:
-    #     file.write(html_content)
-    # print(f"Report saved as {filename}")

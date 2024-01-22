@@ -14,4 +14,4 @@ def get_rmse_card(gauges):
             style={'display': 'flex', 'justify-content': 'space-between'}
         )
     ]
-    return create_card("Root Mean Squared Error (RMSE)", content, None)
+    return create_card("Root Mean Squared Error (RMSE) (mm)", content, None)

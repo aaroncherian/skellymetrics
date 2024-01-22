@@ -3,7 +3,7 @@ from dash.exceptions import PreventUpdate
 import io
 from dash import dcc
 
-from dash_app.report_generation.html_report_generator import generate_html_report
+from metric_comparison_dash_app.report_generation.html_report_generator import generate_html_report
 
 def register_report_download_callback(app, position_dataframe_of_3d_data, position_rmse_dataframe, velocity_dataframe_of_3d_data, velocity_rmse_dataframe):
     @app.callback(

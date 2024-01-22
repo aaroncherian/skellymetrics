@@ -14,6 +14,7 @@ from error_calculations.get_error_metrics import get_error_metrics
 
 from dash_app.run_dash_app import run_dash_app
 from models.mocap_data_model import MoCapData
+from alignment.config import RecordingConfig
 
 def calculate_velocity(data_3d_array):
     return np.diff(data_3d_array, axis=0)
@@ -99,19 +100,19 @@ def combine_and_filter_dataframes(freemocap_dataframe, qualisys_dataframe):
     return combined_dataframe
 
 
-def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,representative_frame, qualisys_marker_list, markers_to_extract, create_scatter_plot = False, save_transformation_matrix = False, transformation_matrix_to_use = None):
+def main(recording_config:RecordingConfig, create_scatter_plot = False, save_transformation_matrix = False, transformation_matrix_to_use = None):
     
     #create a dictionary of the original data, extracted data, and dataframes for the position data for both systems
-    freemocap_position_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=markers_to_extract, path_to_data=freemocap_data_path)
-    qualisys_position_dict = get_data_arrays_and_dataframes(marker_list=qualisys_marker_list, markers_to_extract=markers_to_extract, path_to_data=qualisys_data_path)
+    freemocap_position_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=recording_config.markers_to_compare_list, path_to_data=recording_config.path_to_freemocap_output_data)
+    qualisys_position_dict = get_data_arrays_and_dataframes(marker_list=recording_config.qualisys_marker_list, markers_to_extract=recording_config.markers_to_compare_list, path_to_data=recording_config.path_to_qualisys_output_data)
 
     #create a dictionary of the original data, extracted data, and dataframes for the velocity data for qualisys (we'll calculate the velocity for freemocap after its been aligned)
     qualisys_velocity_array = calculate_velocity(data_dictionary=qualisys_position_dict)
-    qualisys_velocity_dict = get_data_arrays_and_dataframes(marker_list=qualisys_marker_list, markers_to_extract=markers_to_extract, data_array=qualisys_velocity_array)
+    qualisys_velocity_dict = get_data_arrays_and_dataframes(marker_list=recording_config.qualisys_marker_list, markers_to_extract=recording_config.markers_to_compare_list, data_array=qualisys_velocity_array)
 
     #align the freemocap data to the qualisys data
     if transformation_matrix_to_use is None:
-        transformation_matrix = align_freemocap_and_qualisys_data(freemocap_position_dict['extracted_data_3d_array'],qualisys_position_dict['extracted_data_3d_array'],representative_frame)
+        transformation_matrix = align_freemocap_and_qualisys_data(freemocap_position_dict['extracted_data_3d_array'],qualisys_position_dict['extracted_data_3d_array'], recording_config.frame_for_comparison)
         aligned_freemocap_position_data = apply_transformation(transformation_matrix=transformation_matrix, data_to_transform=freemocap_position_dict['original_data_3d_array'])
     else:
         aligned_freemocap_position_data = apply_transformation(transformation_matrix=transformation_matrix_to_use, data_to_transform=freemocap_position_dict['original_data_3d_array'])
@@ -121,17 +122,22 @@ def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,represe
         np.save(path_to_recording_folder/'transformation_matrix.npy', transformation_matrix)
 
     #create a dictionary of the original data, extracted data, and dataframes for the velocity data for newly aligned freemocap data
-    aligned_freemocap_position_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=markers_to_extract, data_array=aligned_freemocap_position_data)
+    aligned_freemocap_position_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=recording_config.markers_to_compare_list, data_array=aligned_freemocap_position_data)
     aligned_freemocap_velocity_array = calculate_velocity(data_dictionary=aligned_freemocap_position_dict)
-    aligned_freemocap_velocity_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=markers_to_extract, data_array=aligned_freemocap_velocity_array)
+    aligned_freemocap_velocity_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=recording_config.markers_to_compare_list, data_array=aligned_freemocap_velocity_array)
 
 
     # plot_3d_scatter(freemocap_data=freemocap_data_dict['extracted_data_3d_array'], qualisys_data=qualisys_data_dict['original_data_3d_array'])
     if create_scatter_plot:
         plot_3d_scatter(freemocap_data=aligned_freemocap_position_data, qualisys_data=qualisys_position_dict['original_data_3d_array'])
 
+    start_frame, end_frame = recording_config.frame_range if recording_config.frame_range else (None, None)
+    
+
+
+
     combined_position_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_position_dict['dataframe_of_extracted_3d_data'])
-    combined_position_dataframe = combined_position_dataframe[(combined_position_dataframe['frame'] >= 700)]
+    # combined_position_dataframe = combined_position_dataframe[(combined_position_dataframe['frame'] >= 700)]
     position_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_position_dataframe)
     position_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'position_absolute_error_dataframe.csv', index = False)
     position_error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'position_rmse_dataframe.csv', index = False)
@@ -139,6 +145,16 @@ def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,represe
 
     combined_velocity_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_velocity_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_velocity_dict['dataframe_of_extracted_3d_data'])
     # combined_velocity_dataframe = combined_velocity_dataframe[(combined_velocity_dataframe['frame'] >= 1150) & (combined_velocity_dataframe['frame'] <= 3550)]
+    
+    if start_frame is not None:
+        combined_position_dataframe = combined_position_dataframe[combined_position_dataframe['frame'] >= start_frame]
+        combined_velocity_dataframe = combined_velocity_dataframe[combined_velocity_dataframe['frame'] >= start_frame]
+
+    if end_frame is not None:
+        combined_position_dataframe = combined_position_dataframe[combined_position_dataframe['frame'] <= end_frame]
+        combined_velocity_dataframe = combined_velocity_dataframe[combined_velocity_dataframe['frame'] <= end_frame]
+
+    
     velocity_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_velocity_dataframe)
     velocity_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'velocity_absolute_error_dataframe.csv', index = False)
     velocity_error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'velocity_rmse_dataframe.csv', index = False)
@@ -159,7 +175,7 @@ def main(path_to_recording_folder,freemocap_data_path,qualisys_data_path,represe
         absolute_error_dataframe=velocity_error_metrics_dict['absolute_error_dataframe']
     )
 
-    run_dash_app(position_data, velocity_data)
+    run_dash_app(position_data, velocity_data, recording_name=recording_config.recording_name)
     f = 2 
 
 
@@ -177,25 +193,22 @@ if __name__ == '__main__':
 
 
     # # full body treadmill data
-    from marker_sets.MDN_validation_marker_set import qualisys_markers, markers_to_extract
+    # from marker_sets.MDN_validation_marker_set import qualisys_markers, markers_to_extract
     path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
  
 
-    freemocap_data_path = path_to_recording_folder/'output_data'/'mediapipe_body_3d_xyz.npy'
-    qualisys_data_path = path_to_recording_folder/'qualisys'/'qualisys_joint_centers_3d_xyz.npy'
+    # freemocap_data_path = path_to_recording_folder/'output_data'/'mediapipe_body_3d_xyz.npy'
+    # qualisys_data_path = path_to_recording_folder/'qualisys'/'qualisys_joint_centers_3d_xyz.npy'
 
     
-  
     # saved_transformation_matrix = np.load(path_to_recording_folder/'transformation_matrix.npy')
     saved_transformation_matrix = None
-    
 
-    freemocap_data_transformed = main(path_to_recording_folder=path_to_recording_folder, 
-                                      freemocap_data_path=freemocap_data_path, 
-                                      qualisys_data_path=qualisys_data_path, 
-                                      representative_frame=500, 
-                                      qualisys_marker_list=qualisys_markers,
-                                        markers_to_extract=markers_to_extract, 
+
+    from prosthetic_validation_configs.leg_length_neg_5_configs import leg_length_neg_5_mp_dlc_config
+
+
+    freemocap_data_transformed = main(recording_config = leg_length_neg_5_mp_dlc_config,
                                         create_scatter_plot=False, 
                                         save_transformation_matrix=False, 
                                         transformation_matrix_to_use=saved_transformation_matrix)

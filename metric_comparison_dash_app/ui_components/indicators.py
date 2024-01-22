@@ -12,8 +12,8 @@ def create_indicators_ui(rmse_error_dataframe):
 
 def create_indicators(rmse_values):
     return [
-        dcc.Graph(figure=create_indicator(rmse_values['total'], "Total RMSE"), style={'width': '100%'}),
-        dcc.Graph(figure=create_indicator(rmse_values['x'], "X RMSE", color_of_text='red'), style={'width': '33%'}),
-        dcc.Graph(figure=create_indicator(rmse_values['y'], "Y RMSE", color_of_text='green'), style={'width': '33%'}),
-        dcc.Graph(figure=create_indicator(rmse_values['z'], "Z RMSE", color_of_text='blue'), style={'width': '33%'}),
+        dcc.Graph(figure=create_indicator(rmse_values['total'], "Total RMSE (mm)"), style={'width': '100%'}),
+        dcc.Graph(figure=create_indicator(rmse_values['x'], "X RMSE (mm)", color_of_text='red'), style={'width': '33%'}),
+        dcc.Graph(figure=create_indicator(rmse_values['y'], "Y RMSE (mm)", color_of_text='green'), style={'width': '33%'}),
+        dcc.Graph(figure=create_indicator(rmse_values['z'], "Z RMSE (mm)", color_of_text='blue'), style={'width': '33%'}),
     ]
