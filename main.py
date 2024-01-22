@@ -15,6 +15,7 @@ from error_calculations.get_error_metrics import get_error_metrics
 from dash_app.run_dash_app import run_dash_app
 from models.mocap_data_model import MoCapData
 from alignment.config import RecordingConfig
+import numpy as np
 
 def calculate_velocity(data_3d_array):
     return np.diff(data_3d_array, axis=0)
@@ -119,7 +120,7 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
 
     #save the transformation matrix if desired
     if save_transformation_matrix:
-        np.save(path_to_recording_folder/'transformation_matrix.npy', transformation_matrix)
+        np.save(recording_config.path_to_recording/'transformation_matrix.npy', transformation_matrix)
 
     #create a dictionary of the original data, extracted data, and dataframes for the velocity data for newly aligned freemocap data
     aligned_freemocap_position_dict = get_data_arrays_and_dataframes(marker_list=mediapipe_markers, markers_to_extract=recording_config.markers_to_compare_list, data_array=aligned_freemocap_position_data)
@@ -139,8 +140,8 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
     combined_position_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_position_dict['dataframe_of_extracted_3d_data'])
     # combined_position_dataframe = combined_position_dataframe[(combined_position_dataframe['frame'] >= 700)]
     position_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_position_dataframe)
-    position_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'position_absolute_error_dataframe.csv', index = False)
-    position_error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'position_rmse_dataframe.csv', index = False)
+    position_error_metrics_dict['absolute_error_dataframe'].to_csv(recording_config.path_to_recording/'output_data'/'position_absolute_error_dataframe.csv', index = False)
+    position_error_metrics_dict['rmse_dataframe'].to_csv(recording_config.path_to_recording/'output_data'/'position_rmse_dataframe.csv', index = False)
 
 
     combined_velocity_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_velocity_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_velocity_dict['dataframe_of_extracted_3d_data'])
@@ -156,12 +157,12 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
 
     
     velocity_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_velocity_dataframe)
-    velocity_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_recording_folder/'output_data'/'velocity_absolute_error_dataframe.csv', index = False)
-    velocity_error_metrics_dict['rmse_dataframe'].to_csv(path_to_recording_folder/'output_data'/'velocity_rmse_dataframe.csv', index = False)
+    velocity_error_metrics_dict['absolute_error_dataframe'].to_csv(recording_config.path_to_recording/'output_data'/'velocity_absolute_error_dataframe.csv', index = False)
+    velocity_error_metrics_dict['rmse_dataframe'].to_csv(recording_config.path_to_recording/'output_data'/'velocity_rmse_dataframe.csv', index = False)
 
 
-    aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'].to_csv(path_to_recording_folder/'output_data'/'freemocap_position_data.csv', index = False)
-    qualisys_position_dict['dataframe_of_extracted_3d_data'].to_csv(path_to_recording_folder/'output_data'/'qualisys_position_data.csv', index = False)
+    aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'].to_csv(recording_config.path_to_recording/'output_data'/'freemocap_position_data.csv', index = False)
+    qualisys_position_dict['dataframe_of_extracted_3d_data'].to_csv(recording_config.path_to_recording/'output_data'/'qualisys_position_data.csv', index = False)
 
     position_data = MoCapData(
         joint_dataframe=combined_position_dataframe,
@@ -175,7 +176,7 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
         absolute_error_dataframe=velocity_error_metrics_dict['absolute_error_dataframe']
     )
 
-    run_dash_app(position_data, velocity_data, recording_name=recording_config.recording_name)
+    run_dash_app(position_data, velocity_data, recording_config)
     f = 2 
 
 
@@ -184,21 +185,11 @@ if __name__ == '__main__':
 
     from pathlib import Path
     import numpy as np
-    # from markers.qualisys_markers import qualisys_markers
-
-    #prosthetic data
-    # from marker_sets.prosthetic_study_marker_set import qualisys_markers, markers_to_extract
-    # path_to_recording_folder = Path(r"D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1")
-    # freemocap_data_path = path_to_recording_folder/'mediapipe_output_data'/'mediapipe_body_3d_xyz.npy'
-
 
     # # full body treadmill data
     # from marker_sets.MDN_validation_marker_set import qualisys_markers, markers_to_extract
-    path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
+    # path_to_recording_folder = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
  
-
-    # freemocap_data_path = path_to_recording_folder/'output_data'/'mediapipe_body_3d_xyz.npy'
-    # qualisys_data_path = path_to_recording_folder/'qualisys'/'qualisys_joint_centers_3d_xyz.npy'
 
     
     # saved_transformation_matrix = np.load(path_to_recording_folder/'transformation_matrix.npy')
@@ -210,5 +201,5 @@ if __name__ == '__main__':
 
     freemocap_data_transformed = main(recording_config = leg_length_neg_5_mp_dlc_config,
                                         create_scatter_plot=False, 
-                                        save_transformation_matrix=False, 
+                                        save_transformation_matrix=True, 
                                         transformation_matrix_to_use=saved_transformation_matrix)
