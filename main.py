@@ -136,12 +136,14 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
     
 
 
+    path_to_save_csvs = recording_config.path_to_freemocap_output_data.parent/'metrics'
+    path_to_save_csvs.mkdir(parents=True, exist_ok=True)
 
     combined_position_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_position_dict['dataframe_of_extracted_3d_data'])
     # combined_position_dataframe = combined_position_dataframe[(combined_position_dataframe['frame'] >= 700)]
     position_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_position_dataframe)
-    position_error_metrics_dict['absolute_error_dataframe'].to_csv(recording_config.path_to_recording/'output_data'/'position_absolute_error_dataframe.csv', index = False)
-    position_error_metrics_dict['rmse_dataframe'].to_csv(recording_config.path_to_recording/'output_data'/'position_rmse_dataframe.csv', index = False)
+    position_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_save_csvs/'position_absolute_error_dataframe.csv', index = False)
+    position_error_metrics_dict['rmse_dataframe'].to_csv(path_to_save_csvs/'position_rmse_dataframe.csv', index = False)
 
 
     combined_velocity_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_velocity_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_velocity_dict['dataframe_of_extracted_3d_data'])
@@ -157,12 +159,12 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
 
     
     velocity_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_velocity_dataframe)
-    velocity_error_metrics_dict['absolute_error_dataframe'].to_csv(recording_config.path_to_recording/'output_data'/'velocity_absolute_error_dataframe.csv', index = False)
-    velocity_error_metrics_dict['rmse_dataframe'].to_csv(recording_config.path_to_recording/'output_data'/'velocity_rmse_dataframe.csv', index = False)
+    velocity_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_save_csvs/'velocity_absolute_error_dataframe.csv', index = False)
+    velocity_error_metrics_dict['rmse_dataframe'].to_csv(path_to_save_csvs/'velocity_rmse_dataframe.csv', index = False)
 
 
-    aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'].to_csv(recording_config.path_to_recording/'output_data'/'freemocap_position_data.csv', index = False)
-    qualisys_position_dict['dataframe_of_extracted_3d_data'].to_csv(recording_config.path_to_recording/'output_data'/'qualisys_position_data.csv', index = False)
+    aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'].to_csv(path_to_save_csvs/'freemocap_position_data.csv', index = False)
+    qualisys_position_dict['dataframe_of_extracted_3d_data'].to_csv(path_to_save_csvs/'qualisys_position_data.csv', index = False)
 
     position_data = MoCapData(
         joint_dataframe=combined_position_dataframe,

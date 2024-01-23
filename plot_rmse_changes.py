@@ -107,21 +107,29 @@ def main(baseline_name, experimental_name):
 
 
 # session_path = Path(r'D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1')
-session_path = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
+# session_path = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_13_48_44_MDN_treadmill_2")
+session_path = Path(r'D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_50_56_TF01_leg_length_pos_25_trial_1')
 
-baseline_session = 'mediapipe'
-experimental_session = 'mediapipe_yolo'
+baseline_session = 'mediapipe_dlc'
+experimental_session = 'mediapipe_yolo_dlc' 
 
-baseline_session_path = session_path/'metrics'/f'{baseline_session}_metrics'
-experimental_session_path = session_path/'metrics'/f'{experimental_session}_metrics'
+baseline_session_folder = f'{baseline_session}_output_data'
+experimental_session_folder = f'{experimental_session}_output_data'
 
-baseline_data = pd.read_csv(session_path/'metrics'/f'{baseline_session}_freemocap_position_data.csv')
+
+baseline_session_path = session_path/baseline_session_folder/'metrics'
+experimental_session_path = session_path/experimental_session_folder/'metrics'
+
+# baseline_session_path = session_path/'metrics'/f'{baseline_session}_metrics'
+# experimental_session_path = session_path/'metrics'/f'{experimental_session}_metrics'
+
+baseline_data = pd.read_csv(baseline_session_path/'freemocap_position_data.csv')
 baseline_data['system'] = baseline_data['system'].replace({'freemocap':f'{baseline_session}'})
 
-experimental_data = pd.read_csv(session_path/'metrics'/f'{experimental_session}_freemocap_position_data.csv')
+experimental_data = pd.read_csv(experimental_session_path/'freemocap_position_data.csv')
 experimental_data['system'] = experimental_data['system'].replace({'freemocap':f'{experimental_session}'})
 
-qualisys_data = pd.read_csv(session_path/'metrics'/'qualisys_position_data.csv')
+qualisys_data = pd.read_csv(baseline_session_path/'qualisys_position_data.csv')
 
 position_dataframe = pd.concat([baseline_data, experimental_data,qualisys_data], ignore_index=True)
 
