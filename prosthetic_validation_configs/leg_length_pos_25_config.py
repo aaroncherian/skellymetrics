@@ -37,6 +37,7 @@ if __name__ == '__main__':
     import numpy as np
     
     saved_transformation_matrix = np.load(path_to_recording/'transformation_matrix.npy')
+    # saved_transformation_matrix = None
     main(leg_length_pos_25_mp_yolo_dlc_config,
         create_scatter_plot=False,
         save_transformation_matrix=False,
