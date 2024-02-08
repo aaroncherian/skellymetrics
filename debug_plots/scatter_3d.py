@@ -39,3 +39,16 @@ def plot_3d_scatter(freemocap_data, qualisys_data):
     frame_slider.on_changed(update)
     plot_frame(0)
     plt.show()
+
+
+if __name__ == '__main__':
+
+    path_to_openpose_data = r"D:\steen_pantsOn_gait_3_cameras\output_data\raw_data\openpose3dData_numFrames_numTrackedPoints_spatialXYZ.npy"
+    openpose_data = np.load(path_to_openpose_data)[:,0:25,:]
+
+    path_to_mediapipe_data  = r'D:\steen_pantsOn_gait_3_cameras\output_data\raw_data\mediapipe3dData_numFrames_numTrackedPoints_spatialXYZ.npy'
+    mediapipe_data = np.load(path_to_mediapipe_data)[:,0:33,:]
+
+    plot_3d_scatter(freemocap_data=mediapipe_data, qualisys_data=openpose_data)
+
+

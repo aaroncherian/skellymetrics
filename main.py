@@ -141,6 +141,12 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
 
     combined_position_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_position_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_position_dict['dataframe_of_extracted_3d_data'])
     # combined_position_dataframe = combined_position_dataframe[(combined_position_dataframe['frame'] >= 700)]
+        
+    if start_frame is not None:
+        combined_position_dataframe = combined_position_dataframe[combined_position_dataframe['frame'] >= start_frame]
+    if end_frame is not None:
+        combined_position_dataframe = combined_position_dataframe[combined_position_dataframe['frame'] <= end_frame]
+
     position_error_metrics_dict = get_error_metrics(dataframe_of_3d_data=combined_position_dataframe)
     position_error_metrics_dict['absolute_error_dataframe'].to_csv(path_to_save_csvs/'position_absolute_error_dataframe.csv', index = False)
     position_error_metrics_dict['rmse_dataframe'].to_csv(path_to_save_csvs/'position_rmse_dataframe.csv', index = False)
@@ -148,13 +154,9 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
 
     combined_velocity_dataframe = combine_and_filter_dataframes(freemocap_dataframe=aligned_freemocap_velocity_dict['dataframe_of_extracted_3d_data'], qualisys_dataframe=qualisys_velocity_dict['dataframe_of_extracted_3d_data'])
     # combined_velocity_dataframe = combined_velocity_dataframe[(combined_velocity_dataframe['frame'] >= 1150) & (combined_velocity_dataframe['frame'] <= 3550)]
-    
     if start_frame is not None:
-        combined_position_dataframe = combined_position_dataframe[combined_position_dataframe['frame'] >= start_frame]
         combined_velocity_dataframe = combined_velocity_dataframe[combined_velocity_dataframe['frame'] >= start_frame]
-
     if end_frame is not None:
-        combined_position_dataframe = combined_position_dataframe[combined_position_dataframe['frame'] <= end_frame]
         combined_velocity_dataframe = combined_velocity_dataframe[combined_velocity_dataframe['frame'] <= end_frame]
 
     
