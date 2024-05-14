@@ -111,13 +111,17 @@ def main(recording_config:RecordingConfig, create_scatter_plot = False, save_tra
     qualisys_velocity_array = calculate_velocity(data_dictionary=qualisys_position_dict)
     qualisys_velocity_dict = get_data_arrays_and_dataframes(marker_list=recording_config.qualisys_marker_list, markers_to_extract=recording_config.markers_to_compare_list, data_array=qualisys_velocity_array)
 
+    # plot_3d_scatter(freemocap_data=freemocap_position_dict['original_data_3d_array'], qualisys_data=qualisys_position_dict['original_data_3d_array'])
+
     #align the freemocap data to the qualisys data
     if transformation_matrix_to_use is None:
         transformation_matrix = align_freemocap_and_qualisys_data(freemocap_position_dict['extracted_data_3d_array'],qualisys_position_dict['extracted_data_3d_array'], recording_config.frame_for_comparison)
         aligned_freemocap_position_data = apply_transformation(transformation_matrix=transformation_matrix, data_to_transform=freemocap_position_dict['original_data_3d_array'])
+        print('Transformation matrix: ', transformation_matrix)
+
     else:
         aligned_freemocap_position_data = apply_transformation(transformation_matrix=transformation_matrix_to_use, data_to_transform=freemocap_position_dict['original_data_3d_array'])
-
+        print('Transformation matrix: ', transformation_matrix_to_use)
     #save the transformation matrix if desired
     if save_transformation_matrix:
         np.save(recording_config.path_to_recording/'transformation_matrix.npy', transformation_matrix)
