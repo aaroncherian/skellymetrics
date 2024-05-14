@@ -30,6 +30,17 @@ leg_length_pos_25_mp_yolo_dlc_config = RecordingConfig(
 
 )
 
+leg_length_pos_25_rigid_mp_dlc_config = RecordingConfig(
+    recording_name= 'Mediaipipe/YOLO + DLC, +.25in leg length',
+    path_to_recording = path_to_recording,
+    path_to_freemocap_output_data = path_to_recording/'rigid_mediapipe_dlc_output_data'/'mediapipe_body_3d_xyz.npy',
+    path_to_qualisys_output_data = path_to_recording/'qualisys_data'/ 'qualisys_joint_centers_3d_xyz.npy',
+    qualisys_marker_list= qualisys_markers,
+    markers_to_compare_list= markers_to_extract,
+    frame_for_comparison= 220,
+    frame_range= None
+
+)
 
 
 if __name__ == '__main__':
@@ -38,7 +49,7 @@ if __name__ == '__main__':
     
     saved_transformation_matrix = np.load(path_to_recording/'transformation_matrix.npy')
     # saved_transformation_matrix = None
-    main(leg_length_pos_25_mp_yolo_dlc_config,
+    main(leg_length_pos_25_rigid_mp_dlc_config,
         create_scatter_plot=False,
         save_transformation_matrix=False,
         transformation_matrix_to_use=saved_transformation_matrix)
