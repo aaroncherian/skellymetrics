@@ -41,13 +41,26 @@ mdn_treadmill_2_mediapipe_yolo_config = RecordingConfig(
 )
 
 
+mdn_treadmill_2_rigid_mediapipe_config = RecordingConfig(
+    recording_name= 'MDN Treadmill 2 Rigid Mediapipe',
+    path_to_recording = path_to_recording,
+    path_to_freemocap_output_data = path_to_recording/'rigid_mediapipe_output_data'/'mediapipe_body_3d_xyz.npy',
+    path_to_qualisys_output_data = path_to_recording/'qualisys_data'/ 'qualisys_joint_centers_3d_xyz.npy',
+    qualisys_marker_list= qualisys_markers,
+    markers_to_compare_list= markers_to_extract,
+    frame_for_comparison= 402,
+    frame_range= [500,None]
+)
+
 if __name__ == '__main__':
     from main import main
     import numpy as np
     
-    # saved_transformation_matrix = np.load(path_to_recording/'transformation_matrix.npy')
-    saved_transformation_matrix = None
-    main(mdn_treadmill_2_mediapipe_yolo_config,
+## NOTE: 04/4/24 - the currently saved data for this would be from the rigid bones config!
+
+    saved_transformation_matrix = np.load(path_to_recording/'transformation_matrix.npy')
+    # saved_transformation_matrix = None
+    main(mdn_treadmill_2_mediapipe_config,
         create_scatter_plot=False,
         save_transformation_matrix=False,
         transformation_matrix_to_use=saved_transformation_matrix)

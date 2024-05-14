@@ -35,7 +35,7 @@ if __name__ == '__main__':
     
     # saved_transformation_matrix = np.load(path_to_recording/'transformation_matrix.npy')
     saved_transformation_matrix = None
-    main(mdn_nih_trial_2_mediapipe_yolo_config,
+    main(mdn_nih_trial_2_mediapipe_config,
         create_scatter_plot=False,
         save_transformation_matrix=True,
         transformation_matrix_to_use=saved_transformation_matrix)
