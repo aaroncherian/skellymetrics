@@ -114,18 +114,18 @@ def main(baseline_name, experimental_name):
     
 # session_path = Path(r'E:\prosthetic_validation\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1')
     
-session_path = Path(r'E:\mdn_data\sesh_2023-05-17_13_48_44_MDN_treadmill_2')
-baseline_session = 'mediapipe'
-experimental_session = 'mediapipe_yolo'
-
-
-session_path = Path(r'E:\prosthetic_validation\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1')
+session_path = Path(r'D:\2023-06-07_TF01\1.0_recordings\treadmill_calib\sesh_2023-06-07_12_50_56_TF01_leg_length_pos_25_trial_1')
 baseline_session = 'mediapipe_dlc'
-experimental_session = 'mediapipe_yolo_dlc'
+experimental_session = 'rigid_mediapipe_dlc'
 
-session_path = Path(r'E:\prosthetic_validation\sesh_2023-06-07_12_50_56_TF01_leg_length_pos_25_trial_1')
-baseline_session = 'mediapipe_dlc'
-experimental_session = 'mediapipe_yolo_dlc'
+
+# session_path = Path(r'E:\prosthetic_validation\sesh_2023-06-07_12_06_15_TF01_flexion_neutral_trial_1')
+# baseline_session = 'mediapipe_dlc'
+# experimental_session = 'mediapipe_yolo_dlc'
+
+# session_path = Path(r'E:\prosthetic_validation\sesh_2023-06-07_12_50_56_TF01_leg_length_pos_25_trial_1')
+# baseline_session = 'mediapipe_dlc'
+# experimental_session = 'mediapipe_yolo_dlc'
 
 
 
