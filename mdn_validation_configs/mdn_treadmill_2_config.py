@@ -36,7 +36,7 @@ mdn_treadmill_2_mediapipe_config = RecordingConfig(
     frames_to_sample=20,
     max_iterations=10,
     inlier_threshold=70,
-    frame_range=None
+    frame_range=[500,None]
 )
 
 
