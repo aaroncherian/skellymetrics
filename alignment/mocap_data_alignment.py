@@ -1,60 +1,71 @@
 import numpy as np
+from scipy.spatial.transform import Rotation
+from scipy.optimize import least_squares
+import random
 
+def optimize_transformation_least_squares(transformation_matrix_guess, data_to_transform, reference_data):
+    tx, ty, tz, rx, ry, rz, s = transformation_matrix_guess
+    rotation = Rotation.from_euler('xyz', [rx, ry, rz], degrees=True)
+    transformed_data = s * rotation.apply(data_to_transform) + np.array([tx, ty, tz])
+    residuals = reference_data - transformed_data
+    return residuals.flatten()
 
-from .transformations.least_squares_optimization import run_least_squares_optimization
-from .transformations.apply_transformation import apply_transformation
+def run_least_squares_optimization(data_to_transform, reference_data, initial_guess=[0,0,0,0,0,0,1]):
+    result = least_squares(optimize_transformation_least_squares, initial_guess, args=(data_to_transform, reference_data), gtol=1e-10, verbose=2)
+    return result.x
 
+def apply_transformation(transformation_matrix, data):
+    tx, ty, tz, rx, ry, rz, s = transformation_matrix
+    rotation = Rotation.from_euler('xyz', [rx, ry, rz], degrees=True)
+    transformed_data = s * rotation.apply(data.reshape(-1, 3)) + np.array([tx, ty, tz])
+    return transformed_data.reshape(data.shape)
 
-def align_freemocap_and_qualisys_data(freemocap_data: np.ndarray, qualisys_data: np.ndarray, representative_frame):
-    """
-    Align FreeMoCap and Qualisys data using a representative frame and least squares optimization. FreeMoCap and Qualisys data should come in with the same number of markers, in the same order.
-
-    Parameters:
-    - freemocap_data (numpy.ndarray): 3D array of FreeMoCap data of shape (num_frames, num_markers, 3).
-    - qualisys_data (numpy.ndarray): 3D array of Qualisys data of shape (num_frames, num_markers, 3).
-    - representative_frame (int): Index of the frame to be used for alignment.
-
-    Returns:
-    - freemocap_data_transformed (numpy.ndarray): Aligned FreeMoCap data.
-    """
-
+def align_freemocap_and_qualisys_data_ransac(freemocap_data, qualisys_data, frames_to_sample=100, initial_guess=[0,0,0,0,0,0,1], max_iterations=1000, inlier_threshold=0.5):
     if freemocap_data.shape[1] != qualisys_data.shape[1]:
         raise ValueError("The number of markers in freemocap_data and qualisys_data must be the same.")
- 
-
-    freemocap_representative_frame = freemocap_data[representative_frame, :, :]
-    qualisys_representative_frame = qualisys_data[representative_frame, :, :]
-
-    transformation_matrix = run_least_squares_optimization(
-        data_to_transform=freemocap_representative_frame, 
-        reference_data=qualisys_representative_frame
-    )
-
-    # freemocap_data_transformed = apply_transformation(
-    #     transformation_matrix=transformation, 
-    #     data_to_transform=freemocap_data
-    # )
-
-    return transformation_matrix
-
-if __name__ == "__main__":
-    from pathlib import Path
-
-    qualisys_data_path = r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\qualisys_MDN_NIH_Trial3\output_data\clipped_qualisys_skel_3d.npy"
-    freemocap_data_path = r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\output_data\mediapipe_body_3d_xyz.npy"
-    freemocap_output_folder_path = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\sesh_2023-05-17_14_53_48_MDN_NIH_Trial3\output_data")
-
-    freemocap_data = np.load(freemocap_data_path)
-    qualisys_data = np.load(qualisys_data_path)
-
-
-    freemocap_data_transformed = align_freemocap_and_qualisys_data(freemocap_data=freemocap_data, qualisys_data=qualisys_data, representative_frame=800)
-    # np.save(freemocap_output_folder_path/'mediapipe_body_3d_xyz_transformed.npy', freemocap_data_transformed)
-
-
-
-
     
+    num_frames = freemocap_data.shape[0]
+    all_frames = list(range(num_frames))
+    
+    best_inliers = []
+    best_transformation_matrix = None
 
-
-
+    for iteration in range(max_iterations):
+        # Randomly sample frames
+        sampled_frames = random.sample(all_frames, frames_to_sample)
+        
+        # Prepare data for least squares optimization
+        sampled_freemocap = freemocap_data[sampled_frames, :, :]
+        sampled_qualisys = qualisys_data[sampled_frames, :, :]
+        
+        # Flatten the data for optimization
+        flattened_freemocap = sampled_freemocap.reshape(-1, 3)
+        flattened_qualisys = sampled_qualisys.reshape(-1, 3)
+        
+        # Fit transformation matrix using least squares
+        transformation_matrix = run_least_squares_optimization(
+            data_to_transform=flattened_freemocap, 
+            reference_data=flattened_qualisys,
+            initial_guess=initial_guess
+        )
+        
+        # Apply the transformation to the entire dataset
+        transformed_freemocap_data = apply_transformation(transformation_matrix, freemocap_data)
+        
+        # Calculate the alignment error for each frame
+        errors = np.linalg.norm(qualisys_data - transformed_freemocap_data, axis=2).mean(axis=1)
+        
+        # Determine inliers based on the error threshold
+        inliers = np.where(errors < inlier_threshold)[0]
+        
+        # Update the best model if the current model has more inliers
+        if len(inliers) > len(best_inliers):
+            best_inliers = inliers
+            best_transformation_matrix = transformation_matrix
+    
+    # Apply the best transformation matrix to align the entire dataset
+    if best_transformation_matrix is not None:
+        # aligned_freemocap_data = apply_transformation(best_transformation_matrix, freemocap_data)
+        return best_transformation_matrix
+    else:
+        raise ValueError("RANSAC failed to find a valid transformation.")

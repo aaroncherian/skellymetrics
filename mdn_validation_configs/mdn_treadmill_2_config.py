@@ -15,42 +15,55 @@ path_to_recording = Path(r"D:\2023-05-17_MDN_NIH_data\1.0_recordings\calib_3\ses
 #     frame_for_comparison= 20,
 #     frame_range= None
 # )
+# mdn_treadmill_2_mediapipe_config = RecordingConfig(
+#     recording_name= 'MDN Treadmill 2 Mediapipe',
+#     path_to_recording = path_to_recording,
+#     path_to_freemocap_output_data = path_to_recording/'mediapipe_output_data'/'mediapipe_body_3d_xyz.npy',
+#     path_to_qualisys_output_data = path_to_recording/'qualisys_data'/ 'qualisys_joint_centers_3d_xyz.npy',
+#     qualisys_marker_list= qualisys_markers,
+#     markers_to_compare_list= markers_to_extract,
+#     frame_for_comparison= 402,
+#     frame_range= [500,None]
+# )
+
 mdn_treadmill_2_mediapipe_config = RecordingConfig(
-    recording_name= 'MDN Treadmill 2 Mediapipe',
-    path_to_recording = path_to_recording,
+    recording_name='MDN Treadmill 2 Mediapipe',
+    path_to_recording=path_to_recording,
     path_to_freemocap_output_data = path_to_recording/'mediapipe_output_data'/'mediapipe_body_3d_xyz.npy',
     path_to_qualisys_output_data = path_to_recording/'qualisys_data'/ 'qualisys_joint_centers_3d_xyz.npy',
     qualisys_marker_list= qualisys_markers,
     markers_to_compare_list= markers_to_extract,
-    frame_for_comparison= 402,
-    frame_range= [500,None]
+    frames_to_sample=20,
+    max_iterations=10,
+    inlier_threshold=70,
+    frame_range=None
 )
 
 
 
 
-mdn_treadmill_2_mediapipe_yolo_config = RecordingConfig(
-    recording_name= 'MDN Treadmill 2 Mediapipe/Yolo',
-    path_to_recording = path_to_recording,
-    path_to_freemocap_output_data = path_to_recording/'output_data'/'mediapipe_body_3d_xyz.npy',
-    path_to_qualisys_output_data = path_to_recording/'qualisys_data'/ 'qualisys_joint_centers_3d_xyz.npy',
-    qualisys_marker_list= qualisys_markers,
-    markers_to_compare_list= markers_to_extract,
-    frame_for_comparison= 402,
-    frame_range= [500,None]
-)
+# mdn_treadmill_2_mediapipe_yolo_config = RecordingConfig(
+#     recording_name= 'MDN Treadmill 2 Mediapipe/Yolo',
+#     path_to_recording = path_to_recording,
+#     path_to_freemocap_output_data = path_to_recording/'output_data'/'mediapipe_body_3d_xyz.npy',
+#     path_to_qualisys_output_data = path_to_recording/'qualisys_data'/ 'qualisys_joint_centers_3d_xyz.npy',
+#     qualisys_marker_list= qualisys_markers,
+#     markers_to_compare_list= markers_to_extract,
+#     frame_for_comparison= 402,
+#     frame_range= [500,None]
+# )
 
 
-mdn_treadmill_2_rigid_mediapipe_config = RecordingConfig(
-    recording_name= 'MDN Treadmill 2 Rigid Mediapipe',
-    path_to_recording = path_to_recording,
-    path_to_freemocap_output_data = path_to_recording/'rigid_mediapipe_output_data'/'mediapipe_body_3d_xyz.npy',
-    path_to_qualisys_output_data = path_to_recording/'qualisys_data'/ 'qualisys_joint_centers_3d_xyz.npy',
-    qualisys_marker_list= qualisys_markers,
-    markers_to_compare_list= markers_to_extract,
-    frame_for_comparison= 402,
-    frame_range= [500,None]
-)
+# mdn_treadmill_2_rigid_mediapipe_config = RecordingConfig(
+#     recording_name= 'MDN Treadmill 2 Rigid Mediapipe',
+#     path_to_recording = path_to_recording,
+#     path_to_freemocap_output_data = path_to_recording/'rigid_mediapipe_output_data'/'mediapipe_body_3d_xyz.npy',
+#     path_to_qualisys_output_data = path_to_recording/'qualisys_data'/ 'qualisys_joint_centers_3d_xyz.npy',
+#     qualisys_marker_list= qualisys_markers,
+#     markers_to_compare_list= markers_to_extract,
+#     frame_for_comparison= 402,
+#     frame_range= [500,None]
+# )
 
 if __name__ == '__main__':
     from main import main
@@ -63,4 +76,4 @@ if __name__ == '__main__':
     main(mdn_treadmill_2_mediapipe_config,
         create_scatter_plot=False,
         save_transformation_matrix=False,
-        transformation_matrix_to_use=saved_transformation_matrix)
+        transformation_matrix_to_use=None)
