@@ -34,8 +34,8 @@ mdn_treadmill_2_mediapipe_config = RecordingConfig(
     qualisys_marker_list= qualisys_markers,
     markers_to_compare_list= markers_to_extract,
     frames_to_sample=20,
-    max_iterations=10,
-    inlier_threshold=70,
+    max_iterations=100,
+    inlier_threshold=40,
     frame_range=[500,None]
 )
 
