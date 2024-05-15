@@ -63,4 +63,4 @@ if __name__ == '__main__':
     main(mdn_treadmill_2_mediapipe_config,
         create_scatter_plot=False,
         save_transformation_matrix=False,
-        transformation_matrix_to_use=saved_transformation_matrix)
+        transformation_matrix_to_use=None)
