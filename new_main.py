@@ -9,11 +9,26 @@ from skellymodels.skeleton_models.skeleton import Skeleton
 from skellymodels.create_model_skeleton import create_mediapipe_skeleton_model, create_qualisys_skeleton_model
 from p01_marker_set import markers_for_alignment
 from data_handlers import DataProcessor
+import pandas as pd
+
+from error_calculations.get_error_metrics import get_error_metrics
 
 
+def merge_dataframes(freemocap_dataframe, qualisys_dataframe):
+    freemocap_dataframe['system'] = 'freemocap'
+    qualisys_dataframe['system'] = 'qualisys'
+    combined_dataframe = pd.concat([freemocap_dataframe, qualisys_dataframe], ignore_index=True)
 
+    return combined_dataframe
+
+def calculate_velocity(data_array):
+    """
+    Calculates the velocity from the data dictionary that is returned from the DataBuilder object 
+    """
+    return np.diff(data_array, axis = 0)
 
 class SpatialAlignmentConfig(BaseModel):
+    recording_name:str
     path_to_freemocap_recording_folder:Path
     path_to_freemocap_output_data: Path
     freemocap_skeleton_function: Callable[[], Skeleton]
@@ -59,6 +74,7 @@ path_to_aligned_center_of_mass_folder.mkdir(parents=True, exist_ok=True)
 
 
 p01_walkrun_trial_1_alignment_config = SpatialAlignmentConfig(
+    recording_name = 'P01 WalkRun Trial 1',
     path_to_freemocap_recording_folder=path_to_freemocap_recording_folder,
     path_to_freemocap_output_data = path_to_freemocap_recording_folder/'aligned_data'/'mediapipe_body_3d_xyz.npy',
     freemocap_skeleton_function = create_mediapipe_skeleton_model,
@@ -92,6 +108,41 @@ def get_metrics(config:SpatialAlignmentConfig):
         marker_list=qualisys_skeleton_model.marker_names,
         markers_for_alignment=config.markers_for_alignment
     )
+
+    position_data_frame = merge_dataframes(freemocap_data_handler.dataframe_of_extracted_3d_data, qualisys_data_handler.dataframe_of_extracted_3d_data)
+    position_error_metrics = get_error_metrics(position_data_frame)
+
+    position_data = MoCapData(
+        joint_dataframe=position_data_frame,
+        rmse_dataframe=position_error_metrics['rmse_dataframe'],
+        absolute_error_dataframe=position_error_metrics['absolute_error_dataframe']
+    )
+
+    freemocap_velocity_data = calculate_velocity(freemocap_data_handler.data_3d)
+    freemocap_velocity_data_handler = DataProcessor(
+        data=freemocap_velocity_data,
+        marker_list=freemocap_skeleton_model.marker_names,
+        markers_for_alignment=config.markers_for_alignment
+    )
+
+    qualisys_velocity_data = calculate_velocity(qualisys_data_handler.data_3d)
+    qualisys_velocity_data_handler = DataProcessor(
+        data=qualisys_velocity_data,
+        marker_list=qualisys_skeleton_model.marker_names,
+        markers_for_alignment=config.markers_for_alignment
+    )
+
+    velocity_data_frame = merge_dataframes(freemocap_velocity_data_handler.dataframe_of_extracted_3d_data, qualisys_velocity_data_handler.dataframe_of_extracted_3d_data)
+    velocity_error_metrics = get_error_metrics(velocity_data_frame)
+
+    velocity_data = MoCapData(
+        joint_dataframe=velocity_data_frame,
+        rmse_dataframe=velocity_error_metrics['rmse_dataframe'],
+        absolute_error_dataframe=velocity_error_metrics['absolute_error_dataframe']
+    )
+
+    run_dash_app(position_data_and_error=position_data, velocity_data_and_error=velocity_data, recording_config=config)
+
 
     f = 2
 
