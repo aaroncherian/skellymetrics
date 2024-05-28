@@ -37,5 +37,5 @@ if __name__ == '__main__':
     saved_transformation_matrix = None
     main(p01_nih_trial_1_config,
         create_scatter_plot=False,
-        save_transformation_matrix=True,
+        save_transformation_matrix=False,
         transformation_matrix_to_use=saved_transformation_matrix)
